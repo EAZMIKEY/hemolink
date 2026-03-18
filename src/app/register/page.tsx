@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState } from 'react';
@@ -10,6 +9,7 @@ import { BLOOD_GROUPS } from '@/lib/blood-utils';
 import { Droplet, ShieldCheck, UserPlus, Phone, Mail, MapPin, Calendar, Heart } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1);
