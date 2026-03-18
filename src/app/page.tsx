@@ -1,4 +1,3 @@
-
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Droplet, Search, ShieldCheck, Users, Activity, Heart, ArrowRight } from 'lucide-react';
@@ -14,7 +13,7 @@ export default function Home() {
             <div className="space-y-8 animate-in slide-in-from-left duration-700">
               <div className="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-sm border border-white/20">
                 <Activity className="h-4 w-4 text-red-400" />
-                Live: 12,450+ Active Donors in Mumbai
+                Live: 12,450+ Active Donors in India
               </div>
               <h1 className="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight">
                 Your Single Click <br />
