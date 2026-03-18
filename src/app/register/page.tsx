@@ -21,6 +21,7 @@ export default function RegisterPage() {
   const [step, setStep] = useState(1);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [progress, setProgress] = useState(0);
   const db = useFirestore();
 
@@ -32,12 +33,34 @@ export default function RegisterPage() {
     city: ''
   });
 
+  // Derived loading state
+  const isLoading = isVerifying || isSubmitting;
+
+  // Fallback safety to prevent stuck loader
+  useEffect(() => {
+    if (isLoading) {
+      const timeout = setTimeout(() => {
+        console.log("Safety: Force stopping loader after timeout");
+        setIsVerifying(false);
+        setIsSubmitting(false);
+      }, 10000);
+      return () => clearTimeout(timeout);
+    }
+  }, [isLoading]);
+
+  // Handle transition to success step
+  useEffect(() => {
+    if (isSuccess) {
+      console.log("Step 4: Transitioning to success view (Step 3)");
+      setStep(3);
+    }
+  }, [isSuccess]);
+
   // Update overall progress based on step
   useEffect(() => {
     if (step === 1) setProgress(0);
-    if (step === 2) setProgress(50);
-    if (step === 3) setProgress(100);
-  }, [step]);
+    if (step === 2 && !isLoading) setProgress(50);
+  }, [step, isLoading]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -58,15 +81,21 @@ export default function RegisterPage() {
   };
 
   const handleVerifyAndRegister = async () => {
-    if (!db) return;
+    if (!db) {
+      console.error("Firestore DB instance not found");
+      return;
+    }
     
+    console.log("Step 1: Button clicked - starting verification");
     setIsVerifying(true);
-    setProgress(60); // Started verification
+    setProgress(60);
 
     try {
+      console.log("Step 2: Mock Aadhaar verification started");
       // Mock Aadhaar verification delay
       await new Promise(resolve => setTimeout(resolve, 1500));
-      setProgress(80); // Identity verified
+      setProgress(80); 
+      console.log("Identity verified successfully");
       
       setIsVerifying(false);
       setIsSubmitting(true);
@@ -77,21 +106,25 @@ export default function RegisterPage() {
         createdAt: serverTimestamp()
       };
 
+      console.log("Step 3: Saving donor profile to Firestore");
       // Using phone number as document ID to prevent duplicates per mobile number
       const donorRef = doc(db, 'donors', formData.phone);
-
       await setDoc(donorRef, donorData, { merge: true });
       
+      console.log("Step 3: Firebase write success - Donor ID:", formData.phone);
       setProgress(100);
-      setStep(3); // Final Success Step
+      
+      // Explicitly set success state to trigger transition
+      console.log("Finalizing registration state");
+      setIsSuccess(true);
       
       toast({
         title: "Registration Successful",
         description: "You are now a part of the HemoLink network.",
       });
-    } catch (error) {
-      console.error("Registration failed:", error);
-      setProgress(50); // Reset to beginning of step 2
+    } catch (error: any) {
+      console.error("Registration flow failed:", error);
+      setProgress(50);
       
       const donorData = {
         ...formData,
@@ -107,12 +140,11 @@ export default function RegisterPage() {
       });
       errorEmitter.emit('permission-error', permissionError);
     } finally {
+      console.log("Step 5: Cleaning up loading states");
       setIsVerifying(false);
       setIsSubmitting(false);
     }
   };
-
-  const isLoading = isVerifying || isSubmitting;
 
   return (
     <div className="container mx-auto px-4 md:px-8 py-12 flex justify-center">
@@ -203,7 +235,7 @@ export default function RegisterPage() {
             </>
           )}
 
-          {step === 2 && (
+          {step === 2 && !isSuccess && (
             <>
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-2">
