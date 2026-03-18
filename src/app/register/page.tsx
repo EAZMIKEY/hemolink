@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from 'react';
@@ -6,16 +7,46 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BLOOD_GROUPS } from '@/lib/blood-utils';
-import { Droplet, ShieldCheck, UserPlus, Phone, Mail, MapPin, Calendar, Heart } from 'lucide-react';
+import { ShieldCheck, UserPlus, Phone, Mail, MapPin, Heart } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { useFirestore } from '@/firebase';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const db = useFirestore();
 
-  const handleNextStep = () => setStep(prev => prev + 1);
+  const [formData, setFormData] = useState({
+    name: '',
+    bloodGroup: '',
+    phone: '',
+    email: '',
+    city: ''
+  });
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleNextStep = () => {
+    if (step === 1) {
+      if (!formData.name || !formData.bloodGroup || !formData.phone || !formData.email || !formData.city) {
+        toast({
+          title: "Missing Information",
+          description: "Please fill in all fields to continue.",
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+    setStep(prev => prev + 1);
+  };
 
   const handleVerify = () => {
     setIsVerifying(true);
@@ -25,8 +56,41 @@ export default function RegisterPage() {
         title: "Aadhaar Verified",
         description: "Your identity has been successfully verified via UIDAI.",
       });
-      handleNextStep();
+      handleSubmit();
     }, 2000);
+  };
+
+  const handleSubmit = async () => {
+    if (!db) return;
+    setIsSubmitting(true);
+
+    const donorData = {
+      ...formData,
+      availability: true,
+      createdAt: serverTimestamp()
+    };
+
+    // Using phone number as document ID to prevent duplicates per mobile number
+    const donorRef = doc(db, 'donors', formData.phone);
+
+    setDoc(donorRef, donorData, { merge: true })
+      .then(() => {
+        setIsSubmitting(false);
+        setStep(3);
+        toast({
+          title: "Registration Successful",
+          description: "You are now a part of the HemoLink network.",
+        });
+      })
+      .catch(async (error) => {
+        setIsSubmitting(false);
+        const permissionError = new FirestorePermissionError({
+          path: donorRef.path,
+          operation: 'create',
+          requestResourceData: donorData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      });
   };
 
   return (
@@ -57,11 +121,15 @@ export default function RegisterPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-bold">Full Name</label>
-                    <Input placeholder="Enter your full name" />
+                    <Input 
+                      placeholder="Enter your full name" 
+                      value={formData.name}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-bold">Blood Group</label>
-                    <Select>
+                    <Select onValueChange={(v) => handleInputChange('bloodGroup', v)} value={formData.bloodGroup}>
                       <SelectTrigger><SelectValue placeholder="Select Group" /></SelectTrigger>
                       <SelectContent>{BLOOD_GROUPS.map(bg => <SelectItem key={bg} value={bg}>{bg}</SelectItem>)}</SelectContent>
                     </Select>
@@ -72,14 +140,24 @@ export default function RegisterPage() {
                     <label className="text-sm font-bold">Mobile Number</label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input placeholder="+91 XXXX-XXXXXX" className="pl-9" />
+                      <Input 
+                        placeholder="+91 XXXX-XXXXXX" 
+                        className="pl-9" 
+                        value={formData.phone}
+                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                      />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-bold">Email Address</label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input placeholder="email@example.com" className="pl-9" />
+                      <Input 
+                        placeholder="email@example.com" 
+                        className="pl-9" 
+                        value={formData.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                      />
                     </div>
                   </div>
                 </div>
@@ -87,7 +165,12 @@ export default function RegisterPage() {
                   <label className="text-sm font-bold">City / Residence</label>
                   <div className="relative">
                     <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Enter your city" className="pl-9" />
+                    <Input 
+                      placeholder="Enter your city" 
+                      className="pl-9" 
+                      value={formData.city}
+                      onChange={(e) => handleInputChange('city', e.target.value)}
+                    />
                   </div>
                 </div>
               </CardContent>
@@ -122,8 +205,8 @@ export default function RegisterPage() {
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col gap-2">
-                <Button onClick={handleVerify} disabled={isVerifying} className="w-full h-12 bg-blue-700 font-bold text-lg">
-                  {isVerifying ? "Verifying..." : "VERIFY IDENTITY"}
+                <Button onClick={handleVerify} disabled={isVerifying || isSubmitting} className="w-full h-12 bg-blue-700 font-bold text-lg">
+                  {isVerifying || isSubmitting ? "Processing..." : "VERIFY & REGISTER"}
                 </Button>
                 <Button variant="ghost" onClick={() => setStep(1)} className="w-full">Back</Button>
               </CardFooter>
@@ -144,7 +227,7 @@ export default function RegisterPage() {
                 <div className="bg-muted/30 p-6 rounded-3xl border text-left space-y-3">
                    <div className="flex justify-between items-center">
                       <span className="text-sm font-bold">Donor ID:</span>
-                      <Badge variant="outline" className="font-mono">HL-8520-XXXX</Badge>
+                      <Badge variant="outline" className="font-mono">HL-{formData.phone.slice(-4)}-XXXX</Badge>
                    </div>
                    <div className="flex justify-between items-center">
                       <span className="text-sm font-bold">Points Earned:</span>

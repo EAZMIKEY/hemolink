@@ -1,0 +1,53 @@
+
+{
+  "entities": {
+    "Donor": {
+      "title": "Donor",
+      "description": "A verified blood donor in the network.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Full name of the donor"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Mobile number of the donor"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Email address of the donor"
+        },
+        "bloodGroup": {
+          "type": "string",
+          "enum": ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+          "description": "Blood group of the donor"
+        },
+        "city": {
+          "type": "string",
+          "description": "City or location of the donor"
+        },
+        "availability": {
+          "type": "boolean",
+          "description": "Whether the donor is currently available to donate"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the donor registered"
+        }
+      },
+      "required": ["name", "phone", "email", "bloodGroup", "city", "availability"]
+    }
+  },
+  "auth": {
+    "providers": ["google.com", "password"]
+  },
+  "firestore": {
+    "/donors/{donorId}": {
+      "schema": "Donor",
+      "description": "Collection of registered blood donors"
+    }
+  }
+}
