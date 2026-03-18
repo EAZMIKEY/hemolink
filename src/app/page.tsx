@@ -26,7 +26,7 @@ export default function Home() {
                 <Button size="lg" className="bg-primary hover:bg-red-700 text-white font-bold h-14 px-8" asChild>
                   <Link href="/emergency">FIND BLOOD NOW</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 h-14 px-8" asChild>
+                <Button size="lg" className="bg-red-600 hover:bg-red-700 text-white font-bold h-14 px-8" asChild>
                   <Link href="/register">Become a Donor</Link>
                 </Button>
               </div>
