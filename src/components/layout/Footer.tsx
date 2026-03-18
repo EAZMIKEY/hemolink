@@ -6,13 +6,13 @@ export function Footer() {
   return (
     <footer className="border-t bg-muted/50 py-12">
       <div className="container mx-auto px-4 md:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2">
               <Droplet className="h-6 w-6 text-primary fill-primary" />
               <span className="text-xl font-bold tracking-tight text-primary">HemoLink</span>
             </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
               India's smart blood donor network. Connects donors, hospitals, and blood banks to save lives during emergencies.
             </p>
             <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
