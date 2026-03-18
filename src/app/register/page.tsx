@@ -19,9 +19,8 @@ import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState('');
   const [progress, setProgress] = useState(0);
   const db = useFirestore();
 
@@ -33,34 +32,12 @@ export default function RegisterPage() {
     city: ''
   });
 
-  // Derived loading state
-  const isLoading = isVerifying || isSubmitting;
-
-  // Fallback safety to prevent stuck loader
-  useEffect(() => {
-    if (isLoading) {
-      const timeout = setTimeout(() => {
-        console.log("Safety: Force stopping loader after timeout");
-        setIsVerifying(false);
-        setIsSubmitting(false);
-      }, 10000);
-      return () => clearTimeout(timeout);
-    }
-  }, [isLoading]);
-
-  // Handle transition to success step
-  useEffect(() => {
-    if (isSuccess) {
-      console.log("Step 4: Transitioning to success view (Step 3)");
-      setStep(3);
-    }
-  }, [isSuccess]);
-
   // Update overall progress based on step
   useEffect(() => {
     if (step === 1) setProgress(0);
-    if (step === 2 && !isLoading) setProgress(50);
-  }, [step, isLoading]);
+    if (step === 2) setProgress(50);
+    if (step === 3) setProgress(100);
+  }, [step]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -86,19 +63,18 @@ export default function RegisterPage() {
       return;
     }
     
-    console.log("Step 1: Button clicked - starting verification");
-    setIsVerifying(true);
-    setProgress(60);
+    console.log("Registration process started for:", formData.phone);
+    setIsLoading(true);
+    setLoadingText('Verifying with UIDAI...');
+    setProgress(65);
 
     try {
-      console.log("Step 2: Mock Aadhaar verification started");
       // Mock Aadhaar verification delay
       await new Promise(resolve => setTimeout(resolve, 1500));
-      setProgress(80); 
-      console.log("Identity verified successfully");
+      console.log("Identity verified");
       
-      setIsVerifying(false);
-      setIsSubmitting(true);
+      setLoadingText('Saving Donor Profile...');
+      setProgress(85);
 
       const donorData = {
         ...formData,
@@ -106,17 +82,15 @@ export default function RegisterPage() {
         createdAt: serverTimestamp()
       };
 
-      console.log("Step 3: Saving donor profile to Firestore");
       // Using phone number as document ID to prevent duplicates per mobile number
       const donorRef = doc(db, 'donors', formData.phone);
       await setDoc(donorRef, donorData, { merge: true });
       
-      console.log("Step 3: Firebase write success - Donor ID:", formData.phone);
+      console.log("Successfully saved to Firestore");
       setProgress(100);
       
-      // Explicitly set success state to trigger transition
-      console.log("Finalizing registration state");
-      setIsSuccess(true);
+      // CRITICAL: Move to step 3 immediately
+      setStep(3);
       
       toast({
         title: "Registration Successful",
@@ -124,7 +98,6 @@ export default function RegisterPage() {
       });
     } catch (error: any) {
       console.error("Registration flow failed:", error);
-      setProgress(50);
       
       const donorData = {
         ...formData,
@@ -139,10 +112,15 @@ export default function RegisterPage() {
         requestResourceData: donorData,
       });
       errorEmitter.emit('permission-error', permissionError);
+      
+      toast({
+        title: "Registration Failed",
+        description: "There was an error saving your profile. Please try again.",
+        variant: "destructive"
+      });
     } finally {
-      console.log("Step 5: Cleaning up loading states");
-      setIsVerifying(false);
-      setIsSubmitting(false);
+      setIsLoading(false);
+      setLoadingText('');
     }
   };
 
@@ -235,7 +213,7 @@ export default function RegisterPage() {
             </>
           )}
 
-          {step === 2 && !isSuccess && (
+          {step === 2 && (
             <>
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-2">
@@ -257,9 +235,7 @@ export default function RegisterPage() {
                   {isLoading && (
                     <div className="flex flex-col items-center gap-2">
                       <Loader2 className="h-5 w-5 text-primary animate-spin" />
-                      <p className="text-xs font-bold text-primary">
-                        {isVerifying ? "Verifying with UIDAI..." : "Saving Donor Profile..."}
-                      </p>
+                      <p className="text-xs font-bold text-primary">{loadingText}</p>
                     </div>
                   )}
                   {!isLoading && (
