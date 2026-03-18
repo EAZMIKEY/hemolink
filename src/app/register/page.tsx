@@ -1,16 +1,17 @@
 
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BLOOD_GROUPS } from '@/lib/blood-utils';
-import { ShieldCheck, UserPlus, Phone, Mail, MapPin, Heart } from 'lucide-react';
+import { ShieldCheck, UserPlus, Phone, Mail, MapPin, Heart, Loader2, CheckCircle2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -20,6 +21,7 @@ export default function RegisterPage() {
   const [step, setStep] = useState(1);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [progress, setProgress] = useState(0);
   const db = useFirestore();
 
   const [formData, setFormData] = useState({
@@ -29,6 +31,13 @@ export default function RegisterPage() {
     email: '',
     city: ''
   });
+
+  // Update overall progress based on step
+  useEffect(() => {
+    if (step === 1) setProgress(0);
+    if (step === 2) setProgress(50);
+    if (step === 3) setProgress(100);
+  }, [step]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -48,50 +57,62 @@ export default function RegisterPage() {
     setStep(prev => prev + 1);
   };
 
-  const handleVerify = () => {
-    setIsVerifying(true);
-    setTimeout(() => {
-      setIsVerifying(false);
-      toast({
-        title: "Aadhaar Verified",
-        description: "Your identity has been successfully verified via UIDAI.",
-      });
-      handleSubmit();
-    }, 2000);
-  };
-
-  const handleSubmit = async () => {
+  const handleVerifyAndRegister = async () => {
     if (!db) return;
-    setIsSubmitting(true);
+    
+    setIsVerifying(true);
+    setProgress(60); // Started verification
 
-    const donorData = {
-      ...formData,
-      availability: true,
-      createdAt: serverTimestamp()
-    };
+    try {
+      // Mock Aadhaar verification delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setProgress(80); // Identity verified
+      
+      setIsVerifying(false);
+      setIsSubmitting(true);
 
-    // Using phone number as document ID to prevent duplicates per mobile number
-    const donorRef = doc(db, 'donors', formData.phone);
+      const donorData = {
+        ...formData,
+        availability: true,
+        createdAt: serverTimestamp()
+      };
 
-    setDoc(donorRef, donorData, { merge: true })
-      .then(() => {
-        setIsSubmitting(false);
-        setStep(3);
-        toast({
-          title: "Registration Successful",
-          description: "You are now a part of the HemoLink network.",
-        });
-      })
-      .catch(async (error) => {
-        setIsSubmitting(false);
-        const permissionError = new FirestorePermissionError({
-          path: donorRef.path,
-          operation: 'create',
-          requestResourceData: donorData,
-        });
-        errorEmitter.emit('permission-error', permissionError);
+      // Using phone number as document ID to prevent duplicates per mobile number
+      const donorRef = doc(db, 'donors', formData.phone);
+
+      await setDoc(donorRef, donorData, { merge: true });
+      
+      setProgress(100);
+      setStep(3); // Final Success Step
+      
+      toast({
+        title: "Registration Successful",
+        description: "You are now a part of the HemoLink network.",
       });
+    } catch (error) {
+      console.error("Registration failed:", error);
+      setProgress(50); // Reset to beginning of step 2
+      
+      const donorData = {
+        ...formData,
+        availability: true,
+        createdAt: serverTimestamp()
+      };
+      const donorRef = doc(db, 'donors', formData.phone);
+      
+      const permissionError = new FirestorePermissionError({
+        path: donorRef.path,
+        operation: 'create',
+        requestResourceData: donorData,
+      });
+      errorEmitter.emit('permission-error', permissionError);
+    } finally {
+      setIsVerifying(false);
+      setIsSubmitting(false);
+    }
   };
+
+  const isLoading = isVerifying || isSubmitting;
 
   return (
     <div className="container mx-auto px-4 md:px-8 py-12 flex justify-center">
@@ -103,10 +124,12 @@ export default function RegisterPage() {
           <h1 className="text-4xl font-extrabold text-secondary">Join HemoLink Network</h1>
           <p className="text-muted-foreground text-lg">Your registration can save lives in your neighborhood.</p>
           
-          <div className="flex items-center justify-center gap-2 pt-4">
-            {[1, 2, 3].map(i => (
-              <div key={i} className={`h-2 rounded-full transition-all duration-300 ${step >= i ? 'w-8 bg-primary' : 'w-2 bg-muted'}`} />
-            ))}
+          <div className="max-w-xs mx-auto space-y-2 pt-4">
+            <div className="flex justify-between text-xs font-bold text-muted-foreground uppercase">
+              <span>Progress</span>
+              <span>{progress}%</span>
+            </div>
+            <Progress value={progress} className="h-2 bg-muted" />
           </div>
         </div>
 
@@ -190,25 +213,49 @@ export default function RegisterPage() {
               </CardHeader>
               <CardContent className="space-y-8 py-8 text-center">
                 <div className="max-w-xs mx-auto space-y-4">
-                  <div className="bg-muted p-4 rounded-2xl border-2 border-dashed">
+                  <div className={`bg-muted p-4 rounded-2xl border-2 transition-all duration-300 ${isLoading ? 'border-primary border-solid animate-pulse' : 'border-dashed'}`}>
                     <p className="text-xs text-muted-foreground font-bold mb-2">UIDAI VERIFICATION</p>
-                    <Input placeholder="XXXX-XXXX-XXXX" className="text-center text-xl tracking-widest font-mono" maxLength={12} />
+                    <Input 
+                      placeholder="XXXX-XXXX-XXXX" 
+                      className="text-center text-xl tracking-widest font-mono" 
+                      maxLength={12} 
+                      disabled={isLoading}
+                    />
                   </div>
-                  <p className="text-xs text-muted-foreground">Verification ensures trust in the network and eligibility for government donor benefits.</p>
+                  {isLoading && (
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2 className="h-5 w-5 text-primary animate-spin" />
+                      <p className="text-xs font-bold text-primary">
+                        {isVerifying ? "Verifying with UIDAI..." : "Saving Donor Profile..."}
+                      </p>
+                    </div>
+                  )}
+                  {!isLoading && (
+                    <p className="text-xs text-muted-foreground">Verification ensures trust in the network and eligibility for government donor benefits.</p>
+                  )}
                 </div>
                 
                 <div className="flex items-center space-x-2 justify-center">
-                  <Checkbox id="terms" />
+                  <Checkbox id="terms" disabled={isLoading} />
                   <label htmlFor="terms" className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     I consent to verify my identity via HemoLink Auth.
                   </label>
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col gap-2">
-                <Button onClick={handleVerify} disabled={isVerifying || isSubmitting} className="w-full h-12 bg-blue-700 font-bold text-lg">
-                  {isVerifying || isSubmitting ? "Processing..." : "VERIFY & REGISTER"}
+                <Button 
+                  onClick={handleVerifyAndRegister} 
+                  disabled={isLoading} 
+                  className="w-full h-12 bg-blue-700 font-bold text-lg"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Processing...
+                    </>
+                  ) : "VERIFY & REGISTER"}
                 </Button>
-                <Button variant="ghost" onClick={() => setStep(1)} className="w-full">Back</Button>
+                <Button variant="ghost" onClick={() => setStep(1)} className="w-full" disabled={isLoading}>Back</Button>
               </CardFooter>
             </>
           )}
@@ -217,21 +264,25 @@ export default function RegisterPage() {
             <>
               <CardHeader className="text-center pt-10">
                 <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-                  <Heart className="h-10 w-10 text-green-600 fill-green-600 animate-pulse" />
+                  <CheckCircle2 className="h-10 w-10 text-green-600 animate-in zoom-in duration-500" />
                 </div>
                 <CardTitle className="text-3xl font-black text-secondary">Ready to Save Lives!</CardTitle>
                 <CardDescription className="text-lg">Your profile is 100% complete and verified.</CardDescription>
               </CardHeader>
               <CardContent className="text-center space-y-6 pb-12">
                 <p className="text-muted-foreground">You will now receive emergency notifications for your blood group in your area. You can manage your availability from the dashboard.</p>
-                <div className="bg-muted/30 p-6 rounded-3xl border text-left space-y-3">
+                <div className="bg-muted/30 p-6 rounded-3xl border text-left space-y-3 shadow-inner">
                    <div className="flex justify-between items-center">
                       <span className="text-sm font-bold">Donor ID:</span>
-                      <Badge variant="outline" className="font-mono">HL-{formData.phone.slice(-4)}-XXXX</Badge>
+                      <Badge variant="outline" className="font-mono bg-white">HL-{formData.phone.slice(-4)}-XXXX</Badge>
                    </div>
                    <div className="flex justify-between items-center">
                       <span className="text-sm font-bold">Points Earned:</span>
                       <span className="text-primary font-black">+500 Welcome Points</span>
+                   </div>
+                   <div className="flex justify-between items-center">
+                      <span className="text-sm font-bold">Status:</span>
+                      <Badge className="bg-green-600">Active & Verified</Badge>
                    </div>
                 </div>
               </CardContent>
