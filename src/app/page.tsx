@@ -124,7 +124,7 @@ export default function Home() {
                 <Button size="lg" className="bg-white text-primary hover:bg-white/90 font-bold h-14 px-10">
                   Register as Donor
                 </Button>
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 h-14 px-10">
+                <Button size="lg" className="bg-white text-primary hover:bg-white/90 font-bold h-14 px-10">
                   Contact Support
                 </Button>
               </div>
