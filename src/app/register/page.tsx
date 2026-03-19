@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -28,6 +28,20 @@ export default function RegisterPage() {
     city: ''
   });
 
+  // Safety fallback to prevent stuck loading state
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (isSubmitting) {
+      timeout = setTimeout(() => {
+        if (isSubmitting) {
+          console.warn("Registration took too long, force stopping loader.");
+          setIsSubmitting(false);
+        }
+      }, 10000); // 10 second safety limit
+    }
+    return () => clearTimeout(timeout);
+  }, [isSubmitting]);
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -45,55 +59,48 @@ export default function RegisterPage() {
       return;
     }
 
+    console.log("Starting registration process...");
     setIsSubmitting(true);
 
-    try {
-      const donorData = {
-        ...formData,
-        availability: true,
-        points: 500, // Welcome points
-        createdAt: serverTimestamp()
-      };
+    const donorData = {
+      ...formData,
+      availability: true,
+      points: 500, // Welcome points
+      createdAt: serverTimestamp()
+    };
 
-      // Use phone as the unique document ID to prevent duplicates
-      const donorRef = doc(db, 'donors', formData.phone);
-      
-      // Execute Firestore write (non-blocking according to guidelines, but here we await for demo certainty)
-      await setDoc(donorRef, donorData, { merge: true });
-      
-      setIsSuccess(true);
-      setIsSubmitting(false);
-      
-      toast({
-        title: "Registration Successful",
-        description: "You've earned 500 welcome points!",
+    // Use phone as the unique document ID to prevent duplicates
+    const donorRef = doc(db, 'donors', formData.phone);
+    
+    // According to guidelines: DO NOT await mutation calls directly.
+    // They are queued for background sync and update local cache immediately.
+    setDoc(donorRef, donorData, { merge: true })
+      .then(() => {
+        console.log("Registration successfully recorded in Firestore.");
+        setIsSuccess(true);
+        setIsSubmitting(false);
+        toast({
+          title: "Registration Successful",
+          description: "You've earned 500 welcome points!",
+        });
+      })
+      .catch(async (error) => {
+        console.error("Registration write failed:", error);
+        
+        const permissionError = new FirestorePermissionError({
+          path: donorRef.path,
+          operation: 'create',
+          requestResourceData: donorData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        
+        toast({
+          title: "Registration Failed",
+          description: "Could not create profile. Please check your connection or permissions.",
+          variant: "destructive"
+        });
+        setIsSubmitting(false);
       });
-
-    } catch (error: any) {
-      console.error("Registration failed:", error);
-      
-      const donorData = {
-        ...formData,
-        availability: true,
-        points: 500,
-        createdAt: serverTimestamp()
-      };
-      const donorRef = doc(db, 'donors', formData.phone);
-      
-      const permissionError = new FirestorePermissionError({
-        path: donorRef.path,
-        operation: 'create',
-        requestResourceData: donorData,
-      });
-      errorEmitter.emit('permission-error', permissionError);
-      
-      toast({
-        title: "Registration Failed",
-        description: "Could not create profile. Please try again.",
-        variant: "destructive"
-      });
-      setIsSubmitting(false);
-    }
   };
 
   if (isSuccess) {
@@ -170,11 +177,17 @@ export default function RegisterPage() {
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-bold">Blood Group</label>
-                  <Select onValueChange={(v) => handleInputChange('bloodGroup', v)} value={formData.bloodGroup} required>
+                  <Select 
+                    onValueChange={(v) => handleInputChange('bloodGroup', v)} 
+                    value={formData.bloodGroup} 
+                    required 
+                    disabled={isSubmitting}
+                  >
                     <SelectTrigger><SelectValue placeholder="Select Group" /></SelectTrigger>
                     <SelectContent>{BLOOD_GROUPS.map(bg => <SelectItem key={bg} value={bg}>{bg}</SelectItem>)}</SelectContent>
                   </Select>
@@ -191,6 +204,7 @@ export default function RegisterPage() {
                       value={formData.phone}
                       onChange={(e) => handleInputChange('phone', e.target.value)}
                       required
+                      disabled={isSubmitting}
                     />
                   </div>
                 </div>
@@ -205,6 +219,7 @@ export default function RegisterPage() {
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
                       required
+                      disabled={isSubmitting}
                     />
                   </div>
                 </div>
@@ -219,6 +234,7 @@ export default function RegisterPage() {
                     value={formData.city}
                     onChange={(e) => handleInputChange('city', e.target.value)}
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
               </div>
