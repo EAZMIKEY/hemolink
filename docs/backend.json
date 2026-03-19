@@ -32,6 +32,10 @@
           "type": "boolean",
           "description": "Whether the donor is currently available to donate"
         },
+        "points": {
+          "type": "number",
+          "description": "Reward points earned by the donor"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time",
