@@ -35,32 +35,35 @@ export default function RegisterPage() {
 
   // Safety Fallback: Force stop loading if it hangs for too long
   useEffect(() => {
+    let timer: NodeJS.Timeout;
     if (isLoading) {
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         console.warn("Safety fallback triggered: Force stopping loader");
         setIsLoading(false);
         setLoadingText('');
       }, 10000);
-      return () => clearTimeout(timer);
     }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, [isLoading]);
 
   // Update overall progress based on step/success
   useEffect(() => {
     if (isSuccess) {
       setProgress(100);
-      setStep(3);
       return;
     }
-    if (step === 1) setProgress(0);
-    if (step === 2) setProgress(50);
+    if (step === 1) setProgress(33);
+    if (step === 2) setProgress(66);
   }, [step, isSuccess]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleNextStep = () => {
+  const handleNextStep = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (step === 1) {
       if (!formData.name || !formData.bloodGroup || !formData.phone || !formData.email || !formData.city) {
         toast({
@@ -74,21 +77,22 @@ export default function RegisterPage() {
     setStep(prev => prev + 1);
   };
 
-  const handleVerifyAndRegister = async () => {
+  const handleVerifyAndRegister = async (e: React.MouseEvent) => {
+    e.preventDefault();
     if (!db) return;
     
     console.log("Step 1: Registration process started");
     setIsLoading(true);
-    setLoadingText('Verifying with UIDAI...');
-    setProgress(65);
+    setLoadingText('Verifying Identity...');
+    setProgress(75);
 
     try {
       // Mock verification delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 1200));
       console.log("Step 2: Identity verified");
       
       setLoadingText('Saving Donor Profile...');
-      setProgress(85);
+      setProgress(90);
 
       const donorData = {
         ...formData,
@@ -103,16 +107,18 @@ export default function RegisterPage() {
       
       console.log("Step 3: Firebase write success");
       
-      // ✅ CRITICAL FIX: Update success states immediately
+      // Trigger success states
       setProgress(100);
       setIsSuccess(true);
+      setIsLoading(false);
+      setLoadingText('');
       setStep(3);
       
       toast({
         title: "Registration Successful",
         description: "You are now a part of the HemoLink network.",
       });
-      console.log("Step 4: UI state transition to success triggered");
+      console.log("Step 4: UI transitioned to success");
 
     } catch (error: any) {
       console.error("Step 5: Registration flow failed:", error);
@@ -136,11 +142,8 @@ export default function RegisterPage() {
         description: "There was an error saving your profile. Please try again.",
         variant: "destructive"
       });
-    } finally {
-      // ✅ ENSURE LOADER STOPS
       setIsLoading(false);
       setLoadingText('');
-      console.log("Step 6: Loading states cleared");
     }
   };
 
@@ -163,14 +166,14 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        <Card className="shadow-2xl border-none overflow-hidden">
+        <Card className="shadow-2xl border-none overflow-hidden min-h-[400px] flex flex-col">
           {step === 1 && (
-            <>
+            <div className="flex-1 flex flex-col">
               <CardHeader>
                 <CardTitle className="text-2xl">Basic Information</CardTitle>
                 <CardDescription>Tell us a bit about yourself.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-6 flex-1">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-bold">Full Name</label>
@@ -228,21 +231,21 @@ export default function RegisterPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={handleNextStep} className="w-full h-12 bg-primary font-bold text-lg">CONTINUE</Button>
+                <Button type="button" onClick={handleNextStep} className="w-full h-12 bg-primary font-bold text-lg">CONTINUE</Button>
               </CardFooter>
-            </>
+            </div>
           )}
 
           {step === 2 && !isSuccess && (
-            <>
+            <div className="flex-1 flex flex-col">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-2">
                   <ShieldCheck className="h-6 w-6 text-blue-600" /> Identity Verification
                 </CardTitle>
                 <CardDescription>Securely verify your identity using Aadhaar (Mock System).</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-8 py-8 text-center">
-                <div className="max-w-xs mx-auto space-y-4">
+              <CardContent className="space-y-8 py-8 text-center flex-1 flex flex-col justify-center">
+                <div className="max-w-xs mx-auto space-y-4 w-full">
                   <div className={`bg-muted p-4 rounded-2xl border-2 transition-all duration-300 ${isLoading ? 'border-primary border-solid animate-pulse' : 'border-dashed'}`}>
                     <p className="text-xs text-muted-foreground font-bold mb-2">UIDAI VERIFICATION</p>
                     <Input 
@@ -272,9 +275,10 @@ export default function RegisterPage() {
               </CardContent>
               <CardFooter className="flex flex-col gap-2">
                 <Button 
+                  type="button"
                   onClick={handleVerifyAndRegister} 
                   disabled={isLoading} 
-                  className="w-full h-12 bg-blue-700 font-bold text-lg"
+                  className="w-full h-12 bg-primary font-bold text-lg"
                 >
                   {isLoading ? (
                     <>
@@ -283,13 +287,13 @@ export default function RegisterPage() {
                     </>
                   ) : "VERIFY & REGISTER"}
                 </Button>
-                <Button variant="ghost" onClick={() => setStep(1)} className="w-full" disabled={isLoading}>Back</Button>
+                <Button type="button" variant="ghost" onClick={() => setStep(1)} className="w-full" disabled={isLoading}>Back</Button>
               </CardFooter>
-            </>
+            </div>
           )}
 
           {(step === 3 || isSuccess) && (
-            <div className="animate-in slide-in-from-bottom duration-500">
+            <div className="animate-in slide-in-from-bottom duration-500 flex-1 flex flex-col">
               <CardHeader className="text-center pt-10">
                 <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
                   <CheckCircle2 className="h-10 w-10 text-green-600 animate-in zoom-in duration-500" />
@@ -297,9 +301,9 @@ export default function RegisterPage() {
                 <CardTitle className="text-3xl font-black text-secondary">Ready to Save Lives!</CardTitle>
                 <CardDescription className="text-lg">Your profile is 100% complete and verified.</CardDescription>
               </CardHeader>
-              <CardContent className="text-center space-y-6 pb-12">
+              <CardContent className="text-center space-y-6 pb-12 flex-1 flex flex-col justify-center">
                 <p className="text-muted-foreground">You will now receive emergency notifications for your blood group in your area. You can manage your availability from the dashboard.</p>
-                <div className="bg-muted/30 p-6 rounded-3xl border text-left space-y-3 shadow-inner">
+                <div className="bg-muted/30 p-6 rounded-3xl border text-left space-y-3 shadow-inner max-w-sm mx-auto w-full">
                    <div className="flex justify-between items-center">
                       <span className="text-sm font-bold">Donor ID:</span>
                       <Badge variant="outline" className="font-mono bg-white">HL-{formData.phone.slice(-4)}-XXXX</Badge>
@@ -315,7 +319,7 @@ export default function RegisterPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="w-full h-12 bg-primary font-bold text-lg" asChild>
+                <Button type="button" className="w-full h-12 bg-primary font-bold text-lg" asChild>
                   <a href="/dashboard">GO TO DASHBOARD</a>
                 </Button>
               </CardFooter>
