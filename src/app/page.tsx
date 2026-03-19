@@ -121,10 +121,7 @@ export default function Home() {
                 <p className="text-xl text-white/80">Register as a donor today and join thousands of heroes saving lives every hour across India.</p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-white text-primary hover:bg-white/90 font-bold h-14 px-10">
-                  Register as Donor
-                </Button>
-                <Button size="lg" className="bg-white text-primary hover:bg-white/90 font-bold h-14 px-10">
+                <Button size="lg" className="text-primary hover:bg-white/90 font-bold h-14 px-10 bg-white">
                   Contact Support
                 </Button>
               </div>
