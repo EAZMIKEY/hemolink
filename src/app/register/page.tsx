@@ -20,6 +20,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 export default function RegisterPage() {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [loadingText, setLoadingText] = useState('');
   const [progress, setProgress] = useState(0);
   const db = useFirestore();
@@ -32,12 +33,28 @@ export default function RegisterPage() {
     city: ''
   });
 
-  // Update overall progress based on step
+  // Safety Fallback: Force stop loading if it hangs for too long
   useEffect(() => {
+    if (isLoading) {
+      const timer = setTimeout(() => {
+        console.warn("Safety fallback triggered: Force stopping loader");
+        setIsLoading(false);
+        setLoadingText('');
+      }, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
+
+  // Update overall progress based on step/success
+  useEffect(() => {
+    if (isSuccess) {
+      setProgress(100);
+      setStep(3);
+      return;
+    }
     if (step === 1) setProgress(0);
     if (step === 2) setProgress(50);
-    if (step === 3) setProgress(100);
-  }, [step]);
+  }, [step, isSuccess]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -58,20 +75,17 @@ export default function RegisterPage() {
   };
 
   const handleVerifyAndRegister = async () => {
-    if (!db) {
-      console.error("Firestore DB instance not found");
-      return;
-    }
+    if (!db) return;
     
-    console.log("Registration process started for:", formData.phone);
+    console.log("Step 1: Registration process started");
     setIsLoading(true);
     setLoadingText('Verifying with UIDAI...');
     setProgress(65);
 
     try {
-      // Mock Aadhaar verification delay
+      // Mock verification delay
       await new Promise(resolve => setTimeout(resolve, 1500));
-      console.log("Identity verified");
+      console.log("Step 2: Identity verified");
       
       setLoadingText('Saving Donor Profile...');
       setProgress(85);
@@ -82,22 +96,26 @@ export default function RegisterPage() {
         createdAt: serverTimestamp()
       };
 
-      // Using phone number as document ID to prevent duplicates per mobile number
       const donorRef = doc(db, 'donors', formData.phone);
+      
+      // Execute Firestore write
       await setDoc(donorRef, donorData, { merge: true });
       
-      console.log("Successfully saved to Firestore");
-      setProgress(100);
+      console.log("Step 3: Firebase write success");
       
-      // CRITICAL: Move to step 3 immediately
+      // ✅ CRITICAL FIX: Update success states immediately
+      setProgress(100);
+      setIsSuccess(true);
       setStep(3);
       
       toast({
         title: "Registration Successful",
         description: "You are now a part of the HemoLink network.",
       });
+      console.log("Step 4: UI state transition to success triggered");
+
     } catch (error: any) {
-      console.error("Registration flow failed:", error);
+      console.error("Step 5: Registration flow failed:", error);
       
       const donorData = {
         ...formData,
@@ -119,8 +137,10 @@ export default function RegisterPage() {
         variant: "destructive"
       });
     } finally {
+      // ✅ ENSURE LOADER STOPS
       setIsLoading(false);
       setLoadingText('');
+      console.log("Step 6: Loading states cleared");
     }
   };
 
@@ -143,7 +163,7 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        <Card className="shadow-2xl border-none">
+        <Card className="shadow-2xl border-none overflow-hidden">
           {step === 1 && (
             <>
               <CardHeader>
@@ -213,7 +233,7 @@ export default function RegisterPage() {
             </>
           )}
 
-          {step === 2 && (
+          {step === 2 && !isSuccess && (
             <>
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-2">
@@ -233,7 +253,7 @@ export default function RegisterPage() {
                     />
                   </div>
                   {isLoading && (
-                    <div className="flex flex-col items-center gap-2">
+                    <div className="flex flex-col items-center gap-2 animate-in fade-in duration-300">
                       <Loader2 className="h-5 w-5 text-primary animate-spin" />
                       <p className="text-xs font-bold text-primary">{loadingText}</p>
                     </div>
@@ -268,8 +288,8 @@ export default function RegisterPage() {
             </>
           )}
 
-          {step === 3 && (
-            <>
+          {(step === 3 || isSuccess) && (
+            <div className="animate-in slide-in-from-bottom duration-500">
               <CardHeader className="text-center pt-10">
                 <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
                   <CheckCircle2 className="h-10 w-10 text-green-600 animate-in zoom-in duration-500" />
@@ -299,7 +319,7 @@ export default function RegisterPage() {
                   <a href="/dashboard">GO TO DASHBOARD</a>
                 </Button>
               </CardFooter>
-            </>
+            </div>
           )}
         </Card>
       </div>
