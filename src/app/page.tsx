@@ -1,4 +1,3 @@
-
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Droplet, Search, ShieldCheck, Users, Activity, Heart, ArrowRight, Globe } from 'lucide-react';
@@ -25,7 +24,7 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold h-14 px-8 rounded-xl shadow-lg shadow-primary/20" asChild>
-                  <Link href="/emergency">FIND BLOOD NOW</Link>
+                  <Link href="/register">REGISTER AS DONOR</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="h-14 px-8 rounded-xl border-2 hover:bg-slate-50 font-bold" asChild>
                   <Link href="/search">Search Donors</Link>
@@ -80,7 +79,7 @@ export default function Home() {
             <Button size="lg" className="bg-white text-primary hover:bg-white/90 font-bold h-14 px-10 rounded-xl" asChild>
               <Link href="/register">BECOME A DONOR</Link>
             </Button>
-            <Button size="lg" className="bg-white text-primary hover:bg-white/90 font-bold h-14 px-10 rounded-xl">
+            <Button size="lg" variant="outline" className="h-14 px-10 rounded-xl border-white/30 text-white hover:bg-white/10 font-bold bg-transparent">
               Contact Support
             </Button>
           </div>
