@@ -49,7 +49,7 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!db) return;
-
+  
     if (!formData.name || !formData.bloodGroup || !formData.phone || !formData.email || !formData.city) {
       toast({
         title: "Missing Information",
@@ -58,49 +58,45 @@ export default function RegisterPage() {
       });
       return;
     }
-
+  
     console.log("Starting registration process...");
     setIsSubmitting(true);
-
+  
     const donorData = {
       ...formData,
       availability: true,
-      points: 500, // Welcome points
+      points: 500,
       createdAt: serverTimestamp()
     };
-
-    // Use phone as the unique document ID to prevent duplicates
-    const donorRef = doc(db, 'donors', formData.phone);
-    
-    // According to guidelines: DO NOT await mutation calls directly.
-    // They are queued for background sync and update local cache immediately.
-    setDoc(donorRef, donorData, { merge: true })
-      .then(() => {
-        console.log("Registration successfully recorded in Firestore.");
-        setIsSuccess(true);
-        setIsSubmitting(false);
-        toast({
-          title: "Registration Successful",
-          description: "You've earned 500 welcome points!",
-        });
-      })
-      .catch(async (error) => {
-        console.error("Registration write failed:", error);
-        
-        const permissionError = new FirestorePermissionError({
-          path: donorRef.path,
-          operation: 'create',
-          requestResourceData: donorData,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        
-        toast({
-          title: "Registration Failed",
-          description: "Could not create profile. Please check your connection or permissions.",
-          variant: "destructive"
-        });
-        setIsSubmitting(false);
+  
+    try {
+      const donorRef = doc(db, 'donors', formData.phone);
+  
+      // ✅ IMPORTANT: USE AWAIT (not .then)
+      await setDoc(donorRef, donorData, { merge: true });
+  
+      console.log("Saved successfully");
+  
+      // ✅ FORCE UI UPDATE ORDER
+      setIsSubmitting(false);
+      setIsSuccess(true);
+  
+      toast({
+        title: "Registration Successful",
+        description: "You've earned 500 welcome points!",
       });
+  
+    } catch (error) {
+      console.error(error);
+  
+      toast({
+        title: "Registration Failed",
+        description: "Something went wrong",
+        variant: "destructive"
+      });
+  
+      setIsSubmitting(false);
+    }
   };
 
   if (isSuccess) {
