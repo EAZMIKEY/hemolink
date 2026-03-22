@@ -7,8 +7,8 @@ import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
 
 export const metadata: Metadata = {
-  title: 'HemoLink Cloud – Google Antigravity Blood Network',
-  description: 'Powered by Google Cloud technology, HemoLink connects donors and hospitals with weightless speed and real-time reliability.',
+  title: 'HemoLink – Real-time Blood Donation Network',
+  description: 'Connecting donors and hospitals with speed and reliability to save lives.',
 };
 
 export default function RootLayout({
