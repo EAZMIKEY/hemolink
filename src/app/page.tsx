@@ -13,7 +13,7 @@ export default function Home() {
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 bg-primary/5 px-4 py-1.5 rounded-full text-sm font-bold border border-primary/10">
                 <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
-                <span className="text-primary font-bold uppercase tracking-wider">Live Donation Network</span>
+                <span className="text-primary font-bold uppercase tracking-wider">Active Donors in India: 852,430</span>
               </div>
               <h1 className="text-5xl md:text-7xl font-black leading-tight tracking-tight text-slate-900">
                 Connecting Donors <br />
