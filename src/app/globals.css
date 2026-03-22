@@ -5,52 +5,52 @@
 
 @layer base {
   :root {
-    --background: 0 15% 96%; /* #F5EEEE approximate */
-    --foreground: 0 0% 10%;
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
-    --primary: 0 100% 35%; /* #b30000 Deep Red */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 222 57% 24%; /* #1A2F60 Dark Blue Accent */
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 92%;
-    --muted-foreground: 0 0% 40%;
-    --accent: 222 57% 24%;
-    --accent-foreground: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 217 89% 61%; /* Google Blue */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 5 81% 56%; /* Google Red */
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 88%;
-    --input: 0 0% 88%;
-    --ring: 0 100% 35%;
-    --radius: 0.75rem;
-    --chart-1: 0 100% 35%;
-    --chart-2: 222 57% 24%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 217 89% 61%;
+    --radius: 1rem;
+    --chart-1: 217 89% 61%; /* Blue */
+    --chart-2: 5 81% 56%;   /* Red */
+    --chart-3: 45 97% 51%;  /* Yellow */
+    --chart-4: 145 63% 44%; /* Green */
+    --chart-5: 222 47% 11%;
   }
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 100% 35%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 222 57% 24%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217 89% 61%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
   }
 }
 
@@ -60,6 +60,8 @@
   }
   body {
     @apply bg-background text-foreground font-body;
+    background-image: radial-gradient(at 0% 0%, hsla(217, 89%, 61%, 0.05) 0, transparent 50%),
+                      radial-gradient(at 100% 100%, hsla(5, 81%, 56%, 0.05) 0, transparent 50%);
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-headline font-bold;
@@ -68,24 +70,33 @@
 
 @layer utilities {
   .animate-float {
-    animation: float 6s ease-in-out infinite;
+    animation: float 8s ease-in-out infinite;
   }
   
+  .animate-float-slow {
+    animation: float 12s ease-in-out infinite;
+  }
+
   .animate-float-delayed {
-    animation: float 6s ease-in-out 3s infinite;
+    animation: float 8s ease-in-out 4s infinite;
   }
 
   @keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-    100% { transform: translateY(0px); }
+    0% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-15px) rotate(0.5deg); }
+    66% { transform: translateY(-5px) rotate(-0.5deg); }
+    100% { transform: translateY(0px) rotate(0deg); }
   }
 
   .shadow-antigravity {
-    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    box-shadow: 0 25px 50px -12px rgba(66, 133, 244, 0.15);
   }
 
   .hover-lift {
-    @apply transition-transform duration-300 hover:-translate-y-2 hover:shadow-antigravity;
+    @apply transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:shadow-primary/20;
+  }
+
+  .google-gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#4285F4] via-[#EA4335] to-[#FBBC05];
   }
 }
