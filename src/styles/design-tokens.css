@@ -1,0 +1,43 @@
+/* src/styles/design-tokens.css - Global Design System */
+
+:root {
+  /* Spacing Scale */
+  --space-4: 0.25rem;
+  --space-6: 0.375rem;
+  --space-8: 0.5rem;
+  --space-12: 0.75rem;
+  --space-16: 1rem;
+  --space-24: 1.5rem;
+  --space-32: 2rem;
+
+  /* Typography Scale */
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+
+  /* Color Palette (Dark Theme Base) */
+  --primary-red: #ff0000;
+  --accent-red: #cc0000;
+  --deep-black: #050505;
+  --soft-black: #111111;
+  --graphite-gray: #1f1f1f;
+  --neon-red: #ff3333;
+  --neon-blue: #00e5ff; /* Dedicated to API endpoints */
+}
+
+/* National Theme Elevation & Glow Presets */
+.glow-red {
+  box-shadow: 0 0 15px rgba(255, 51, 51, 0.4), 0 0 30px rgba(255, 51, 51, 0.2);
+}
+.glow-yellow {
+  box-shadow: 0 0 15px rgba(255, 234, 0, 0.4), 0 0 30px rgba(255, 234, 0, 0.2);
+}
+.glow-green {
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.4), 0 0 30px rgba(0, 255, 0, 0.2);
+}
+.glow-blue {
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.4), 0 0 30px rgba(0, 229, 255, 0.2);
+}

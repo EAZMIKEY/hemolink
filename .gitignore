@@ -43,3 +43,9 @@ next-env.d.ts
 # firebase
 firebase-debug.log
 firestore-debug.log
+
+# additional build and temp folders
+/dist
+/temp
+/uploads
+/cache

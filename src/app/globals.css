@@ -1,7 +1,8 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import "../styles/design-tokens.css";
 
 @layer base {
   :root {
@@ -11,47 +12,53 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 0 72% 51%; /* Blood Red */
+    --primary: 0 100% 55%; /* #ff1a1a - Pure Red */
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.1% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 217 89% 61%; /* Blue accent */
+    --accent: 0 100% 55%;
     --accent-foreground: 222.2 47.1% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 0 72% 51%;
-    --radius: 0.75rem;
-    --chart-1: 0 72% 51%;
+    --ring: 0 100% 55%;
+    --radius: 1.25rem; /* Larger rounded corners globally */
+    --chart-1: 0 100% 55%;
     --chart-2: 217 89% 61%;
     --chart-3: 145 63% 44%;
     --chart-4: 45 97% 51%;
     --chart-5: 222 47% 11%;
   }
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 0 0% 2%; /* #050505 - Deeper Black */
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 0 0% 4%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 0 0% 2%;
     --popover-foreground: 210 40% 98%;
-    --primary: 0 72% 51%;
+    --primary: 0 100% 50%; /* #ff0000 - Aggressive Red */
     --primary-foreground: 210 40% 98%;
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 217.2 32.6% 12.5%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
+    --muted: 217.2 32.6% 12.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 0 100% 50%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 0 72% 51%;
+    --border: 0 0% 12%;
+    --input: 0 0% 12%;
+    --ring: 0 100% 50%;
+    --radius: 1.25rem;
   }
+}
+
+/* Shadcn Modals Backdrop Blur & Dimmer BG Override */
+.fixed.inset-0.z-50[class*="bg-black"] {
+  @apply bg-black/90 backdrop-blur-md transition-all duration-500 !important;
 }
 
 @layer base {
@@ -59,25 +66,147 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body;
+    @apply bg-background text-foreground font-body selection:bg-primary/30 selection:text-white break-words overflow-x-hidden;
+    background-image: 
+      radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0.03) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff0000' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4v-4H4v4H0v2h4v4h2v-4h4v-2H6zm30 0v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-attachment: fixed;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-headline font-bold;
+    @apply font-headline font-bold tracking-tight;
   }
 }
 
 @layer utilities {
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
+  .padding-xl {
+    @apply p-8 md:p-12;
   }
 
-  @keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
+  .rounded-premium {
+    @apply rounded-[2rem];
   }
 
-  .hover-lift {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+  .shadow-premium {
+    @apply shadow-[0_20px_50px_rgba(255,0,0,0.1)];
+  }
+
+  .shadow-neon {
+    @apply shadow-[0_0_20px_rgba(255,0,0,0.3)];
+  }
+
+  .text-gradient-red {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-red-600 via-red-500 to-red-800;
+  }
+
+  .glass-premium {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl;
+  }
+
+  .animate-fade-in {
+    @apply animate-in fade-in duration-700;
+  }
+
+  .animate-slide-up {
+    @apply animate-in slide-in-from-bottom-5 duration-500;
+  }
+
+  /* Shimmer / Skeleton Loader */
+  .shimmer {
+    @apply relative overflow-hidden bg-muted/20;
+  }
+  .shimmer::after {
+    @apply absolute inset-0 -translate-x-full;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+    animation: shimmer 2s infinite;
+    content: '';
+  }
+
+  @keyframes shimmer {
+    100% { transform: translateX(100%); }
+  }
+
+  /* 3D Blood Drop floating */
+  .animate-float-premium {
+    animation: float-premium 6s ease-in-out infinite;
+  }
+
+  @keyframes float-premium {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+  }
+
+  /* Pulsing Border for KPI Cards */
+  .animate-border-pulse {
+    @apply relative overflow-hidden;
+  }
+  .animate-border-pulse::before {
+    content: '';
+    @apply absolute inset-[-2px] bg-gradient-to-r from-primary/0 via-primary to-primary/0;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    transition: 0.5s;
+    opacity: 0.2;
+    animation: border-rotate 4s linear infinite;
+  }
+
+  @keyframes border-rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .btn-premium {
+    @apply relative overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-neon;
+  }
+
+  /* Medical Pulse Lines Background */
+  .bg-ekg {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M0 50 L20 50 L25 40 L35 70 L45 30 L55 60 L60 50 L100 50' fill='none' stroke='rgba(255,0,0,0.05)' stroke-width='2'/%3E%3C/svg%3E");
+  }
+
+  .active-nav-glow {
+    @apply relative text-white scale-105;
+  }
+  .active-nav-glow::after {
+    content: '';
+    @apply absolute -bottom-1 left-0 w-full h-0.5 bg-primary shadow-[0_0_10px_rgba(255,0,0,0.8)] rounded-full;
+    animation: grow-underline 0.3s ease-out forwards;
+  }
+
+  @keyframes grow-underline {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  .shadow-neon-blue {
+    @apply shadow-[0_0_20px_rgba(59,130,246,0.5)];
+  }
+
+  .shadow-neon-red {
+    @apply shadow-[0_0_20px_rgba(239,68,68,0.5)];
+  }
+
+  .shadow-neon-success {
+    @apply shadow-[0_0_25px_rgba(34,197,94,0.6)];
+  }
+
+  .animate-scan-y {
+    animation: scan-y 2.5s ease-in-out infinite;
+  }
+
+  @keyframes scan-y {
+    0%, 100% { top: 10%; opacity: 0; }
+    10%, 90% { opacity: 1; }
+    50% { top: 90%; }
+  }
+
+  .animate-shake {
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+  }
+
+  @keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
   }
 }

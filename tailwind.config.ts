@@ -56,6 +56,13 @@ export default {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))',
         },
+        'primary-red': 'var(--primary-red)',
+        'accent-red': 'var(--accent-red)',
+        'deep-black': 'var(--deep-black)',
+        'soft-black': 'var(--soft-black)',
+        'graphite-gray': 'var(--graphite-gray)',
+        'neon-red': 'var(--neon-red)',
+        'neon-blue': 'var(--neon-blue)',
       },
       borderRadius: {
         lg: 'var(--radius)',
