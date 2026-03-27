@@ -100,7 +100,11 @@
     "missionCritical": "Mission Critical: Every second counts.",
     "backbone": "Regular donors are the backbone of our emergency response. Register today to ensure the network is always ready for the next crisis.",
     "enlistHero": "Enlist as Hero",
-    "newSos": "New SOS"
+    "newSos": "New SOS",
+    "helpCenter": "Help Center",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "safetyGuidelines": "Safety Guidelines"
   },
   "navbar": {
     "opsHub": "ইউনিফাইড অপারেশন হাব",
@@ -144,7 +148,8 @@
     "termsOfService": "Terms of Service",
     "safetyGuidelines": "Safety Guidelines",
     "contactLabel": "Contact",
-    "verifiedSystem": "Verified System"
+    "verifiedSystem": "Verified System",
+    "modules": "MODULES"
   },
   "homepage": {
     "joinNetwork": "নেটওয়ার্কে যোগ দিন",

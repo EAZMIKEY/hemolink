@@ -100,7 +100,11 @@
     "donateDesc": "डोनर के रूप में पंजीकरण करें और हर दिन जीवन बचाएं।",
     "needDesc": "नज़दीकी संगत डोनर या ब्लड बैंक खोजें।",
     "hospitalDesc": "SOS अनुरोध प्रबंधित करें और तेज़ी से स्थानीय डोनर खोजें।",
-    "bloodBankDesc": "इन्वेंट्री ट्रैक करें और अस्पतालों से जुड़ें।"
+    "bloodBankDesc": "इन्वेंट्री ट्रैक करें और अस्पतालों से जुड़ें।",
+    "helpCenter": "Help Center",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "safetyGuidelines": "Safety Guidelines"
   },
   "navbar": {
     "opsHub": "यूनिफाइड ऑपरेशंस हब",
@@ -144,7 +148,8 @@
     "contactLabel": "संपर्क",
     "verifiedSystem": "सत्यापित प्रणाली",
     "stateDelhi": "राज्य: दिल्ली",
-    "districtCentral": "District: Central"
+    "districtCentral": "District: Central",
+    "modules": "MODULES"
   },
   "homepage": {
     "joinNetwork": "नेटवर्क से जुड़ें",

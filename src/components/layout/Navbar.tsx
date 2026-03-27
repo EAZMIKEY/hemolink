@@ -1,7 +1,7 @@
 "use client"
 
 import { Link, usePathname, useRouter } from '@/i18n/routing';
-import { Droplet, Menu, X, LayoutDashboard, Search, MapPin, AlertCircle, Activity, History as Auditing, FileText, Globe, ShieldCheck, Users, Heart, Settings } from 'lucide-react';
+import { Droplet, Menu, X, LayoutDashboard, Search, MapPin, AlertCircle, Activity, History as Auditing, FileText, Globe, ShieldCheck, Users, Heart, Settings, Sun, Moon } from 'lucide-react';
 import { UserStats } from "@/components/UserStats";
 import {
   LineChart, Line, XAxis, YAxis,
@@ -16,13 +16,14 @@ import { LanguageSelector } from './LanguageSelector';
 
 
 import { UnifiedOperationsHub } from './UnifiedOperationsHub';
+import { useTheme } from '@/components/ThemeContext';
 
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const t = useTranslations('navbar');
   const tc = useTranslations('common');
-
+  const { theme, toggleTheme } = useTheme();
 
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
@@ -131,55 +132,51 @@ export function Navbar() {
             </div>
 
             {/* Right Side Tools */}
-            <div className="flex items-center gap-1 shrink-0">
-
-              {/* National Hub Toggle */}
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 hover:border-primary/30 transition-all">
-                 <Globe className="w-4 h-4 text-primary animate-pulse" />
-                 <select className="bg-transparent text-white text-[9px] font-black uppercase tracking-wider outline-none cursor-pointer focus:text-primary transition-colors appearance-none px-1">
-                    <option className="bg-slate-900">{t('nationalHub')}</option>
-                    <option className="bg-slate-900">{t('stateDelhi')}</option>
-                    <option className="bg-slate-900">{t('districtCentral')}</option>
-
-                 </select>
+            <div className="flex items-center gap-3 shrink-0 mr-4">
+              {/* VIEW MODE / National Hub Toggle */}
+              <div className="flex flex-col items-end mr-2">
+                 <span className="text-[7px] font-black uppercase text-slate-500 tracking-widest pl-2 mb-[1px]">View Mode</span>
+                 <div className="flex items-center gap-1.5 cursor-pointer group hover:bg-white/5 py-0.5 rounded-md transition-colors">
+                    <select className="bg-transparent text-foreground text-[10px] font-black uppercase tracking-wider outline-none cursor-pointer focus:text-primary transition-colors appearance-none text-right">
+                       <option className="bg-slate-900">{t('nationalHub')}</option>
+                       <option className="bg-slate-900">{t('stateDelhi')}</option>
+                       <option className="bg-slate-900">{t('districtCentral')}</option>
+                    </select>
+                    <Globe className="w-3.5 h-3.5 text-red-500 group-hover:scale-110 transition-transform" />
+                 </div>
               </div>
 
-              <div className="shrink-0">
+              <div className="shrink-0 flex items-center pr-2 border-r border-white/10">
                  <LanguageSelector />
               </div>
 
-              
+              <button onClick={toggleTheme} className="p-1 px-2 text-yellow-500 hover:text-yellow-400 transition-colors">
+                 {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4 text-slate-400" />}
+              </button>
+
               {user ? (
-
-                <div className="flex items-center gap-2 pl-2 border-l border-white/10 shrink-0">
-
-                  <span className="text-xs font-bold text-slate-300">
-                    {user.name}
-                  </span>
+                <div className="flex items-center gap-3 pl-1 shrink-0">
+                  <div className="flex flex-col items-start leading-[1.1]">
+                    <span className="text-[9px] text-slate-400 font-medium">Hi,</span>
+                    <span className="text-[11px] font-bold text-foreground capitalize">{user.name.split(' ')[0]}</span>
+                  </div>
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="border-white/10 font-bold hover:bg-red-500 hover:text-white hover:border-red-500 transition-all text-xs"
+                    className="border-white/10 bg-transparent hover:bg-white/5 font-bold hover:text-foreground transition-all text-[10px] px-3 ml-1 rounded-full border border-slate-700 h-8"
                     onClick={handleLogout}
                   >
                     {t('logout', { defaultValue: 'Logout' })}
-
-
                   </Button>
-
-
                 </div>
               ) : (
-                <div className="flex items-center gap-1 pl-1.5 border-l border-white/10 shrink-0">
+                <div className="flex items-center gap-1 pl-1.5 shrink-0">
                   <Button variant="ghost" size="sm" className="font-bold text-slate-300 hover:text-white text-[10px] px-1.5" asChild>
                     <Link href="/login">{t('login')}</Link>
                   </Button>
                   <Button size="sm" className="bg-primary hover:bg-primary/90 shadow-neon-red text-white font-black uppercase tracking-wider text-[9px] px-2 rounded-lg h-7" asChild>
                     <Link href="/register">{t('register')}</Link>
                   </Button>
-
-
-
                 </div>
               )}
             </div>

@@ -107,13 +107,13 @@ export function UnifiedOperationsHub({ onOpenAI }: { onOpenAI: () => void }) {
       <button 
         onClick={() => setIsVisible(!isVisible)}
         className={cn(
-          "px-2 py-1.5 text-[8.5px] font-black tracking-[0.1em] rounded-lg flex items-center gap-1.5 transition-all uppercase whitespace-nowrap",
+          "px-2 xl:px-3 py-2 text-[11px] xl:text-[13px] font-bold rounded-lg flex items-center gap-1.5 transition-all uppercase whitespace-nowrap group",
           isVisible 
-            ? "bg-primary text-white shadow-[0_0_25px_rgba(239,68,68,0.4)]" 
-            : "bg-primary text-white hover:bg-primary/90 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+            ? "text-primary bg-primary/10 shadow-[0_0_15px_rgba(239,68,68,0.1)]" 
+            : "text-muted-foreground hover:text-foreground hover:bg-accent"
         )}
       >
-        <Menu className="h-4 w-4" /> {t('opsHub')}
+        <Menu className="h-4 w-4 transition-transform group-hover:scale-110" /> {t('modules', { defaultValue: 'MODULES' })}
       </button>
 
       {/* Main Panel */}

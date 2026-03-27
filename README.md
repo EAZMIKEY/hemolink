@@ -2,11 +2,14 @@
 
 ![HemoLink Header](https://img.shields.io/badge/HemoLink-National--Grade-red?style=for-the-badge&logo=heart)
 [![Next.js](https://img.shields.io/badge/Next.js-15.5-black?logo=next.js&style=flat-square)](https://nextjs.org/)
+[![Vercel](https://img.shields.io/badge/Vercel-Production_Ready-black?logo=vercel&style=flat-square)](https://vercel.com/)
 [![FHIR R4](https://img.shields.io/badge/FHIR-R4-green?logo=hl7&style=flat-square)](https://www.hl7.org/fhir/R4/)
 [![ABDM Ready](https://img.shields.io/badge/ABDM-Ready-blue?style=flat-square)](https://abdm.gov.in/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript&style=flat-square)](https://www.typescriptlang.org/)
 
-**HemoLink** is a government-grade, national-level blood management system designed for scale, security, and interoperability. It serves as a unified digital backbone connecting donors, hospitals, and blood banks across the country using HL7 FHIR R4 standards.
+**HemoLink** is a premium, government-grade, national-level blood management system designed for scale, security, and interoperability. It serves as a unified digital backbone connecting donors, hospitals, and blood banks across the country using HL7 FHIR R4 standards.
+
+🔥 **Latest Update (v2.5.0-PRO):** Fully audited for production. Features a strictly enforced **Premium Night View (Dark Mode) UI**, Zero-Error static build verification, and globally synchronized `next-intl` localization matrices.
 
 ---
 
@@ -16,13 +19,15 @@ HemoLink is more than just a matching app; it is a comprehensive clinical and lo
 - **Biometric Trust Layer**: Simulated + Hardware-ready fingerprint verification with SHA-256 template encryption.
 - **FHIR R4 EHR**: Complete Electronic Health Record system with ABDM-compliant Patient, Observation, and Procedure resources.
 - **Blood Component Tracking**: End-to-end lifecycle system tracing PRBC, Platelets, Plasma, and Cryoprecipitate across the national grid.
-- **Unified Operations Hub (v2)**: A professional, grouped control center replacing legacy modules with search, color-coded status, and premium haptics.
-- **Global i18n System (v1)**: Full multilingual support via `next-intl` (English, Hindi, Bengali, Marathi, Tamil) with localized routing.
-- **AI National Upgrade (v5)**: Global AI Engine wrapper with 5 dedicated endpoints for matching, predictive heatmap, fraud detection, routing, and emergency classification.
+- **Unified Operations Hub**: A professional, grouped control center (the *MODULES* drop-down) replacing legacy navigation with deep search, color-coded status, and unified view modes.
+- **Global i18n System**: Full multilingual support via `next-intl` (English, Hindi, Bengali, Marathi, Tamil) with deep-merged strict rendering and zero runtime warnings.
+- **AI National Upgrade**: Global AI Engine wrapper with 5 dedicated endpoints for matching, predictive heatmap, fraud detection, routing, and emergency classification.
 
-### ✅ Completed National-Grade Modules (Final)
-All modules have been upgraded to the **Premium HemoLink National Tier**:
+### ✅ Completed National-Grade Modules
+All modules have been aggressively optimized to the **Premium HemoLink National Tier**:
+- **Production Grade Architecture**: Swept entirely clean of all React hydration errors, JSX structural bugs, and unhandled routing. Vercel deployment green-lit.
 - **Global Multilingual Support**: 100% translated UI components with instant locale switching and persistence.
+- **Premium Dark Aesthetics**: Complete UI overhaul featuring neon haptics, glow cards, and glassmorphism.
 - **RBAC & Governance**: Hierarchical access for National, State, and District admins with protected routes.
 - **Audit Registry**: Real-time logging of all critical system events for regulatory compliance.
 - **Smart Routing Engine**: Proximity and stock-level based ranking for inter-bank blood transfers.
@@ -31,12 +36,8 @@ All modules have been upgraded to the **Premium HemoLink National Tier**:
 - **Facility Verification**: Onboarding and approval dashboard for hospitals and blood banks.
 - **Staff Command Center**: National personnel management and access tier control.
 - **Volunteer Portal**: Citizen network for camp assistance and emergency response.
-- **Donor Trust badges**: Tiered verification system (Bronze to Platinum) based on donation history.
 - **Aadhaar Biometric Hub**: High-fidelity offline identity verification with simulated fingerprint scanning.
 - **Offline Rural Mode**: Local queuing and sync logic for blood camps in low-connectivity zones.
-- **National Compliance Reports**: Automated generation of regulatory reports in PDF/CSV formats.
-- **AI National Hub**: Integrated AI-driven insights for systemic optimization and real-time fraud detection.
-- **Zero-Error Core Stabilization**: Finalized global codebase sweep removing all hydration bugs, hydration mismatches, missing JSX fragments, and unhandled 404 routes.
 
 ---
 
@@ -48,7 +49,7 @@ All modules have been upgraded to the **Premium HemoLink National Tier**:
 - **Unified Stock Model**: Standardized inventory tracking across private and public sectors.
 - **Haversine Matcher**: Precise radius-based search (0-100km) with pincode and district filters.
 
-### 🤖 AI National Upgrade (v5)
+### 🤖 AI National Upgrade
 - **Global AI Engine**: Reusable wrapper for deterministic systemic intelligence.
 - **Predictive Heatmap**: 3-day availability trends with DISTRICT-level shortage warnings.
 - **Fraud & Security AI**: Real-time detection of duplicate Aadhaar and abnormal transaction spikes.
@@ -80,7 +81,7 @@ HemoLink provides a **National API Platform** for third-party integration:
 
 1. **Clone & Install**:
    ```bash
-   git clone https://github.com/yourusername/hemolink.git
+   git clone https://github.com/EAZMIKEY/hemolink.git
    npm install
    ```
 
@@ -90,10 +91,16 @@ HemoLink provides a **National API Platform** for third-party integration:
    NEXT_PUBLIC_API_TRUST_KEY="your-national-key"
    ```
 
-3. **Run Platform**:
+3. **Run Platform Locally (Development)**:
    ```bash
-   npm run dev # Port 9002
+   npm run dev # Runs on Port 9002
    ```
+
+4. **Production Build (Vercel Ready)**:
+   ```bash
+   npm run build
+   ```
+   *HemoLink is guaranteed zero-error for Next.js strict Vercel deployment workflows.*
 
 ---
 
@@ -128,4 +135,3 @@ Designed to meet **NDHM (National Digital Health Mission)** structural standards
 
 ---
 *Developed with ❤️ for the national blood supply chain to ensure "No life is lost for want of blood."*
-

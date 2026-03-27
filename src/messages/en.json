@@ -100,7 +100,11 @@
     "donateDesc": "Register as a donor and save lives every day.",
     "needDesc": "Find nearby compatible donors or blood banks.",
     "hospitalDesc": "Manage SOS requests and find local donors fast.",
-    "bloodBankDesc": "Track inventory and connect with hospitals."
+    "bloodBankDesc": "Track inventory and connect with hospitals.",
+    "helpCenter": "Help Center",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "safetyGuidelines": "Safety Guidelines"
   },
   "navbar": {
     "opsHub": "Unified Operation Hub",
@@ -144,7 +148,8 @@
     "contactLabel": "Contact",
     "verifiedSystem": "Verified System",
     "stateDelhi": "State: Delhi",
-    "districtCentral": "District: Central"
+    "districtCentral": "District: Central",
+    "modules": "MODULES"
   },
   "homepage": {
     "joinNetwork": "Join the Network",

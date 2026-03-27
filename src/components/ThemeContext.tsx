@@ -15,12 +15,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('dark');
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('hemolink-theme') as Theme;
+    // V2 namespaces forces dark mode on first visit after this update
+    const savedTheme = localStorage.getItem('hemolink-theme-v2') as Theme;
     if (savedTheme) {
       setTheme(savedTheme);
       document.documentElement.classList.toggle('dark', savedTheme === 'dark');
     } else {
       setTheme('dark');
+      localStorage.setItem('hemolink-theme-v2', 'dark');
       document.documentElement.classList.add('dark');
     }
   }, []);
@@ -28,7 +30,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
-    localStorage.setItem('hemolink-theme', newTheme);
+    localStorage.setItem('hemolink-theme-v2', newTheme);
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
 
