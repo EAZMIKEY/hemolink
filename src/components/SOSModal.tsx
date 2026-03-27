@@ -16,6 +16,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { AlertCircle, Loader2, CheckCircle2, MapPin, Search, BellRing } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useTranslations } from 'next-intl';
+
 
 interface SOSModalProps {
   isOpen: boolean;
@@ -23,7 +25,9 @@ interface SOSModalProps {
 }
 
 export function SOSModal({ isOpen, onClose }: SOSModalProps) {
+  const t = useTranslations('common');
   const [step, setStep] = useState<'input' | 'finding' | 'found'>('input');
+
   const [formData, setFormData] = useState({
     bloodGroup: '',
     location: '',
@@ -55,20 +59,23 @@ export function SOSModal({ isOpen, onClose }: SOSModalProps) {
           <div className="mx-auto w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
             <AlertCircle className="h-6 w-6 text-primary animate-pulse" />
           </div>
-          <DialogTitle className="text-2xl font-black text-center">Emergency Request</DialogTitle>
+          <DialogTitle className="text-2xl font-black text-center">{t('sosTitle')}</DialogTitle>
           <DialogDescription className="text-center">
-            Your request will be broadcasted to all nearby donors instantly.
+            {t('sosSub')}
           </DialogDescription>
+
         </DialogHeader>
 
         {step === 'input' && (
           <form onSubmit={handleSOSSubmit} className="space-y-6 py-4">
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Blood Group Needed</label>
+                <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">{t('bloodGroupLabel')}</label>
+
                 <Select onValueChange={(v) => setFormData({...formData, bloodGroup: v})} value={formData.bloodGroup}>
                   <SelectTrigger className="h-12 rounded-xl border-2 focus:ring-primary">
-                    <SelectValue placeholder="Select Blood Group" />
+                    <SelectValue placeholder={t('selectGroup')} />
+
                   </SelectTrigger>
                   <SelectContent>
                     {BLOOD_GROUPS.map(bg => (
@@ -79,11 +86,13 @@ export function SOSModal({ isOpen, onClose }: SOSModalProps) {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">City / Current Hospital</label>
+                <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">{t('hospitalLabel')}</label>
+
                 <div className="relative">
                   <MapPin className="absolute left-3 top-3.5 h-5 w-5 text-primary" />
                   <Input 
-                    placeholder="e.g. Apollo Hospital, Mumbai" 
+                    placeholder={t('hospitalPlaceholder')} 
+
                     className="pl-10 h-12 rounded-xl border-2"
                     value={formData.location}
                     onChange={(e) => setFormData({...formData, location: e.target.value})}
@@ -94,10 +103,11 @@ export function SOSModal({ isOpen, onClose }: SOSModalProps) {
 
               <div className="space-y-4 pt-2">
                 <div className="flex justify-between items-center">
-                   <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Urgency Level</label>
+                   <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">{t('urgencyLabel')}</label>
                    <Badge variant="outline" className={formData.urgency[0] > 70 ? "text-primary border-primary animate-pulse" : ""}>
-                     {formData.urgency[0] === 100 ? "CRITICAL" : formData.urgency[0] > 50 ? "URGENT" : "STABLE"}
+                     {formData.urgency[0] === 100 ? t('critical') : formData.urgency[0] > 50 ? t('urgent') : t('stable')}
                    </Badge>
+
                 </div>
                 <Slider 
                   value={formData.urgency} 
@@ -111,8 +121,9 @@ export function SOSModal({ isOpen, onClose }: SOSModalProps) {
 
             <Button type="submit" className="w-full h-14 bg-primary hover:bg-red-700 font-black text-lg rounded-2xl shadow-xl shadow-primary/20 gap-2">
               <BellRing className="h-5 w-5" />
-              BROADCAST ALERTS
+              {t('broadcastAlerts')}
             </Button>
+
           </form>
         )}
 
@@ -124,12 +135,14 @@ export function SOSModal({ isOpen, onClose }: SOSModalProps) {
              </div>
              <div className="text-center space-y-4">
                 <div className="space-y-1">
-                  <h3 className="text-2xl font-black animate-pulse text-primary italic">Sending alerts...</h3>
-                  <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Matching donors...</p>
+                  <h3 className="text-2xl font-black animate-pulse text-primary italic">{t('sendingAlerts')}</h3>
+                  <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">{t('matchingDonors')}</p>
+
                 </div>
                 <div className="space-y-2 text-sm text-muted-foreground font-medium max-w-[200px] mx-auto">
-                   <div className="flex items-center gap-2 justify-start"><div className="w-2 h-2 rounded-full bg-primary animate-ping" /> <span className="text-[10px] font-black">GPS ENCRYPTED</span></div>
-                   <div className="flex items-center gap-2 justify-start"><div className="w-2 h-2 rounded-full bg-primary animate-ping" style={{ animationDelay: '0.5s' }} /> <span className="text-[10px] font-black">NETWORK BROADCAST</span></div>
+                   <div className="flex items-center gap-2 justify-start"><div className="w-2 h-2 rounded-full bg-primary animate-ping" /> <span className="text-[10px] font-black">{t('gpsEncrypted')}</span></div>
+                   <div className="flex items-center gap-2 justify-start"><div className="w-2 h-2 rounded-full bg-primary animate-ping" style={{ animationDelay: '0.5s' }} /> <span className="text-[10px] font-black">{t('networkBroadcast')}</span></div>
+
                 </div>
              </div>
           </div>
@@ -141,23 +154,26 @@ export function SOSModal({ isOpen, onClose }: SOSModalProps) {
                 <CheckCircle2 className="h-14 w-14 text-green-600 dark:text-green-400" />
              </div>
              <div className="text-center space-y-2">
-                <h3 className="text-3xl font-black text-green-600 dark:text-green-400">3 donors found nearby</h3>
-                <p className="text-muted-foreground font-medium text-balance">Verified {formData.bloodGroup} donors have acknowledged your emergency request.</p>
+                <h3 className="text-3xl font-black text-green-600 dark:text-green-400">3 {t('donorsFound')}</h3>
+                <p className="text-muted-foreground font-medium text-balance">{t('foundDesc', { bloodGroup: formData.bloodGroup })}</p>
+
              </div>
              
              <div className="w-full bg-muted/50 rounded-2xl p-4 border border-border space-y-3">
                 <div className="flex justify-between items-center text-sm">
-                   <span className="font-bold">Estimated Response:</span>
-                   <span className="text-primary font-black">5 - 8 mins</span>
+                   <span className="font-bold">{t('estResponse')}</span>
+                   <span className="text-primary font-black">{t('minsRange')}</span>
                 </div>
+
                 <div className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
                    <div className="w-3/4 h-full bg-green-500 rounded-full animate-pulse"></div>
                 </div>
              </div>
 
              <Button onClick={resetAndClose} variant="outline" className="w-full h-12 rounded-xl font-bold border-2">
-                DISMISS
+                {t('dismiss')}
              </Button>
+
           </div>
         )}
       </DialogContent>

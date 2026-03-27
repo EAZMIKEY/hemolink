@@ -1,0 +1,12 @@
+.next/types/app/[locale]/dashboard/camps/aadhaar-verification/page.ts(12,13): error TS2344: Type 'OmitWithTag<typeof import("C:/Users/hp/Desktop/hemolink/HEMOLINK/src/app/[locale]/dashboard/camps/aadhaar-verification/page"), "metadata" | "default" | "viewport" | "config" | "generateStaticParams" | ... 9 more ... | "experimental_ppr", "">' does not satisfy the constraint '{ [x: string]: never; }'.
+  Property 'simulateFingerprintMatch' is incompatible with index signature.
+    Type '(storedHash: string | null, newHash: string) => boolean' is not assignable to type 'never'.
+src/components/EligibilityCheckModal.tsx(67,24): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/components/EligibilityCheckModal.tsx(75,24): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/components/EligibilityCheckModal.tsx(83,24): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/components/EligibilityCheckModal.tsx(91,24): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/components/EligibilityCheckModal.tsx(99,24): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/components/MatchResultsModal.tsx(111,25): error TS2322: Type '"ghost"' is not assignable to type '"secondary" | "destructive" | "default" | "outline" | null | undefined'.
+src/components/ui/calendar.tsx(57,9): error TS2353: Object literal may only specify known properties, and 'IconLeft' does not exist in type 'Partial<CustomComponents>'.
+src/components/ui/calendar.tsx(57,22): error TS7031: Binding element 'className' implicitly has an 'any' type.
+src/components/ui/calendar.tsx(60,23): error TS7031: Binding element 'className' implicitly has an 'any' type.

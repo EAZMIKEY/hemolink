@@ -1,0 +1,173 @@
+
+> nextn@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.9
+
+   Creating an optimized production build ...
+
+[1m[33mwarn[39m[22m - The class `delay-[2000ms]` is ambiguous and matches multiple utilities.
+[1m[33mwarn[39m[22m - If this is content and not a class, replace it with `delay-&lsqb;2000ms&rsqb;` to silence this warning.
+ ✓ Compiled successfully in 49s
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/139) ...
+   Generating static pages (34/139) 
+   Generating static pages (69/139) 
+   Generating static pages (104/139) 
+ ✓ Generating static pages (139/139)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                            Size  First Load JS
+┌ ○ /_not-found                                        1 kB         103 kB
+├ ● /[locale]                                       49.9 kB         215 kB
+├   ├ /en
+├   ├ /hi
+├   ├ /bn
+├   └ [+2 more paths]
+├ ● /[locale]/banks                                 10.7 kB         156 kB
+├   ├ /en/banks
+├   ├ /hi/banks
+├   ├ /bn/banks
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard                             16.8 kB         144 kB
+├   ├ /en/dashboard
+├   ├ /hi/dashboard
+├   ├ /bn/dashboard
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/analytics                     11 kB         224 kB
+├   ├ /en/dashboard/analytics
+├   ├ /hi/dashboard/analytics
+├   ├ /bn/dashboard/analytics
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/api-docs                    6.74 kB         116 kB
+├   ├ /en/dashboard/api-docs
+├   ├ /hi/dashboard/api-docs
+├   ├ /bn/dashboard/api-docs
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/appointments                 7.9 kB         118 kB
+├   ├ /en/dashboard/appointments
+├   ├ /hi/dashboard/appointments
+├   ├ /bn/dashboard/appointments
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/audit-logs                  6.52 kB         116 kB
+├   ├ /en/dashboard/audit-logs
+├   ├ /hi/dashboard/audit-logs
+├   ├ /bn/dashboard/audit-logs
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/blood-components             7.9 kB         121 kB
+├   ├ /en/dashboard/blood-components
+├   ├ /hi/dashboard/blood-components
+├   ├ /bn/dashboard/blood-components
+├   └ [+2 more paths]
+├ ƒ /[locale]/dashboard/blood-components/[bagId]    5.98 kB         119 kB
+├ ● /[locale]/dashboard/camps                       5.63 kB         115 kB
+├   ├ /en/dashboard/camps
+├   ├ /hi/dashboard/camps
+├   ├ /bn/dashboard/camps
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/camps/aadhaar-verification  7.29 kB         117 kB
+├   ├ /en/dashboard/camps/aadhaar-verification
+├   ├ /hi/dashboard/camps/aadhaar-verification
+├   ├ /bn/dashboard/camps/aadhaar-verification
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/donor                       8.53 kB         118 kB
+├   ├ /en/dashboard/donor
+├   ├ /hi/dashboard/donor
+├   ├ /bn/dashboard/donor
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/ehr                          6.7 kB         116 kB
+├   ├ /en/dashboard/ehr
+├   ├ /hi/dashboard/ehr
+├   ├ /bn/dashboard/ehr
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/hospital/admin              10.9 kB         121 kB
+├   ├ /en/dashboard/hospital/admin
+├   ├ /hi/dashboard/hospital/admin
+├   ├ /bn/dashboard/hospital/admin
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/incidents                   6.07 kB         119 kB
+├   ├ /en/dashboard/incidents
+├   ├ /hi/dashboard/incidents
+├   ├ /bn/dashboard/incidents
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/incidents/heatmap           4.95 kB         115 kB
+├   ├ /en/dashboard/incidents/heatmap
+├   ├ /hi/dashboard/incidents/heatmap
+├   ├ /bn/dashboard/incidents/heatmap
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/national/api-monitor        7.81 kB         221 kB
+├   ├ /en/dashboard/national/api-monitor
+├   ├ /hi/dashboard/national/api-monitor
+├   ├ /bn/dashboard/national/api-monitor
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/reports                     5.42 kB         115 kB
+├   ├ /en/dashboard/reports
+├   ├ /hi/dashboard/reports
+├   ├ /bn/dashboard/reports
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/settings                    3.72 kB         113 kB
+├   ├ /en/dashboard/settings
+├   ├ /hi/dashboard/settings
+├   ├ /bn/dashboard/settings
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/staff                       5.49 kB         115 kB
+├   ├ /en/dashboard/staff
+├   ├ /hi/dashboard/staff
+├   ├ /bn/dashboard/staff
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/state                       6.16 kB         143 kB
+├   ├ /en/dashboard/state
+├   ├ /hi/dashboard/state
+├   ├ /bn/dashboard/state
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/verification                5.27 kB         115 kB
+├   ├ /en/dashboard/verification
+├   ├ /hi/dashboard/verification
+├   ├ /bn/dashboard/verification
+├   └ [+2 more paths]
+├ ● /[locale]/dashboard/volunteers                  5.78 kB         115 kB
+├   ├ /en/dashboard/volunteers
+├   ├ /hi/dashboard/volunteers
+├   ├ /bn/dashboard/volunteers
+├   └ [+2 more paths]
+├ ● /[locale]/emergency                             7.79 kB         150 kB
+├   ├ /en/emergency
+├   ├ /hi/emergency
+├   ├ /bn/emergency
+├   └ [+2 more paths]
+├ ● /[locale]/login                                 5.28 kB         118 kB
+├   ├ /en/login
+├   ├ /hi/login
+├   ├ /bn/login
+├   └ [+2 more paths]
+├ ƒ /[locale]/qr/bag/[bagId]                        2.23 kB         104 kB
+├ ● /[locale]/register                              9.15 kB         258 kB
+├   ├ /en/register
+├   ├ /hi/register
+├   ├ /bn/register
+├   └ [+2 more paths]
+├ ● /[locale]/search                                6.71 kB         143 kB
+├   ├ /en/search
+├   ├ /hi/search
+├   ├ /bn/search
+├   └ [+2 more paths]
+├ ƒ /api/ai/donor-match                               142 B         102 kB
+├ ƒ /api/ai/emergency-classify                        142 B         102 kB
+├ ƒ /api/ai/heatmap                                   142 B         102 kB
+├ ƒ /api/ai/routing                                   142 B         102 kB
+└ ƒ /api/ai/security                                  142 B         102 kB
++ First Load JS shared by all                        102 kB
+  ├ chunks/1255-de0c1abd22c7cccd.js                 45.2 kB
+  ├ chunks/4bd1b696-182b6b13bdad92e3.js             54.2 kB
+  └ other shared chunks (total)                     2.58 kB
+
+
+ƒ Middleware                                        70.4 kB
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+

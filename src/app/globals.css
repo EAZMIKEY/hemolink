@@ -66,7 +66,8 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body selection:bg-primary/30 selection:text-white break-words overflow-x-hidden;
+    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-white break-words overflow-x-hidden;
+    font-family: 'Inter', 'Noto Sans Devanagari', sans-serif;
     background-image: 
       radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0.03) 0%, transparent 50%),
       url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff0000' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4v-4H4v4H0v2h4v4h2v-4h4v-2H6zm30 0v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");

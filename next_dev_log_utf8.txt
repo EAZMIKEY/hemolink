@@ -1,0 +1,6 @@
+﻿   Γû▓ Next.js 15.5.9
+   - Local:        http://localhost:9002
+   - Network:      http://192.168.137.1:9002
+
+ Γ£ô Starting...
+ Γ£ô Ready in 2.4s

@@ -301,7 +301,10 @@ export default function BloodBanksPage() {
         {/* Map Side */}
         <div className="lg:col-span-2 h-[85vh] relative animate-in zoom-in fade-in duration-1000">
            {/* Mini Compass */}
-           <div className="absolute top-6 left-6 z-10 p-2 bg-slate-900/80 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl pointer-events-none animate-in fade-out duration-1000 delay-[2000ms] fill-mode-forwards">
+           <div 
+             className="absolute top-6 left-6 z-10 p-2 bg-slate-900/80 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl pointer-events-none animate-in fade-out duration-1000 fill-mode-forwards"
+             style={{ animationDelay: '2000ms' }}
+           >
               <div className="w-10 h-10 relative flex items-center justify-center">
                  <div className="w-0.5 h-full bg-slate-700 absolute" />
                  <div className="h-0.5 w-full bg-slate-700 absolute" />

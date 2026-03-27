@@ -1,30 +1,32 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Globe, ChevronDown } from 'lucide-react';
+import { useLocale } from 'next-intl';
+import { usePathname, useRouter } from '@/i18n/routing';
 
-export type LangCode = 'en' | 'hi' | 'mr';
+export type LangCode = 'en' | 'hi' | 'bn' | 'mr' | 'ta' | 'te';
 
 const LANG_LABELS: Record<LangCode, string> = {
-  en: '🇬🇧 English', hi: '🇮🇳 हिंदी', mr: '🇮🇳 मराठी',
+  en: '🇬🇧 English', 
+  hi: '🇮🇳 हिंदी', 
+  bn: '🇮🇳 বাংলা', 
+  mr: '🇮🇳 मराठी', 
+  ta: '🇮🇳 தமிழ்',
+  te: '🇮🇳 తెలుగు'
 };
 
 export function LanguageSelector() {
-  const [lang, setLang] = useState<LangCode>('en');
+  const locale = useLocale() as LangCode;
+  const router = useRouter();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    const saved = localStorage.getItem('hemolink_lang') as LangCode | null;
-    if (saved && saved in LANG_LABELS) setLang(saved);
-  }, []);
-
   const handleSetLang = (l: LangCode) => {
-    setLang(l);
-    localStorage.setItem('hemolink_lang', l);
-    // Reload to apply language changes if needed, or use a context.
-    // For now, it just updates the local state and storage.
-    window.dispatchEvent(new Event('languageChange'));
-    window.location.reload(); // Simplest way to propagate to home page for now
+    localStorage.setItem('NEXT_LOCALE', l);
+    document.cookie = `NEXT_LOCALE=${l}; path=/; max-age=31536000`;
+    router.replace(pathname, { locale: l });
+    setOpen(false);
   };
 
   return (
@@ -34,8 +36,8 @@ export function LanguageSelector() {
         className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-border bg-background/80 text-xs font-bold hover:border-primary/40 transition-all"
       >
         <Globe className="h-3.5 w-3.5 text-muted-foreground" />
-        <span className="hidden sm:inline">{LANG_LABELS[lang].split(' ')[0]} {LANG_LABELS[lang].split(' ').slice(1).join(' ')}</span>
-        <span className="sm:hidden">{LANG_LABELS[lang].split(' ')[0]}</span>
+        <span className="hidden sm:inline">{LANG_LABELS[locale]?.split(' ')[0]} {LANG_LABELS[locale]?.split(' ').slice(1).join(' ')}</span>
+        <span className="sm:hidden">{LANG_LABELS[locale]?.split(' ')[0]}</span>
         <ChevronDown className={`h-3 w-3 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (
@@ -43,8 +45,8 @@ export function LanguageSelector() {
           {(Object.keys(LANG_LABELS) as LangCode[]).map(code => (
             <button
               key={code}
-              onClick={() => { handleSetLang(code); setOpen(false); }}
-              className={`w-full text-left px-4 py-2.5 text-sm font-bold transition-colors hover:bg-muted ${lang === code ? 'text-primary' : ''}`}
+              onClick={() => handleSetLang(code)}
+              className={`w-full text-left px-4 py-2.5 text-sm font-bold transition-colors hover:bg-muted ${locale === code ? 'text-primary' : ''}`}
             >
               {LANG_LABELS[code]}
             </button>
