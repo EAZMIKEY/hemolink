@@ -1,155 +1,157 @@
 "use client"
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useImperativeHandle, forwardRef } from 'react';
 import dynamic from 'next/dynamic';
-import { Card, CardContent } from '@/components/ui/card';
-import { Navigation, ShieldCheck, MapPin, SignalHigh, Globe, Compass } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Globe, Locate, Navigation, ShieldCheck, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { LeafletMapRef } from './LeafletMap';
-import { cn } from '@/lib/utils';
+import { LeafletMapRef, LeafletMapProps } from './LeafletMap';
+import { BloodBank } from '@/lib/mock-data';
 
-// Dynamically import the map to avoid SSR issues with Leaflet
-const LeafletMap = dynamic(() => import('./LeafletMap'), { 
+// Dynamically import LeafletMap to avoid SSR issues
+const LeafletMap = dynamic(() => import('./LeafletMap'), {
   ssr: false,
-  loading: () => <div className="h-full w-full bg-slate-100 dark:bg-slate-900 animate-pulse flex items-center justify-center font-black text-muted-foreground italic">Calibrating Satellite...</div>
+  loading: () => (
+    <div className="h-full w-full bg-slate-950 flex flex-col items-center justify-center gap-4 text-muted-foreground">
+      <div className="relative flex items-center justify-center">
+        <div className="w-16 h-16 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
+        <Globe className="w-6 h-6 text-primary absolute animate-pulse" />
+      </div>
+      <p className="font-black text-xs uppercase tracking-widest text-slate-400">
+        Initializing Geographic Satellite Feed...
+      </p>
+    </div>
+  ),
 });
 
-const mockNearNodes = [
-  { id: 1, name: 'Rahul S.', role: 'donor', group: 'A+', dist: '1.2 km', time: '4 min', status: 'Available', lat: 19.0880, lng: 72.8827 },
-  { id: 2, name: 'City Hospital', role: 'hospital', group: 'H', dist: '2.5 km', time: '8 min', status: 'Urgent', lat: 19.0680, lng: 72.8627 },
-  { id: 3, name: 'Life Bank', role: 'bloodbank', group: 'ALL', dist: '3.1 km', time: '12 min', status: 'Stocked', lat: 19.0960, lng: 72.8677 },
-];
+export interface MapViewProps {
+  banks: BloodBank[];
+  selectedBankId?: string | null;
+  onSelectBank?: (bank: BloodBank) => void;
+  center?: [number, number];
+  zoom?: number;
+  isScanning?: boolean;
+}
 
-const getRoleColors = (role: string) => {
-  if (role === 'hospital') return { bg: 'bg-blue-500', text: 'text-blue-500', shadow: 'shadow-blue-500/20', hover: 'hover:bg-blue-600', ring: 'bg-blue-500/5' };
-  if (role === 'bloodbank') return { bg: 'bg-green-500', text: 'text-green-500', shadow: 'shadow-green-500/20', hover: 'hover:bg-green-600', ring: 'bg-green-500/5' };
-  return { bg: 'bg-primary', text: 'text-primary', shadow: 'shadow-primary/20', hover: 'hover:bg-primary', ring: 'bg-primary/5' };
-};
+export const MapView = forwardRef<LeafletMapRef, MapViewProps>((props, ref) => {
+  const {
+    banks = [],
+    selectedBankId,
+    onSelectBank,
+    center,
+    zoom,
+    isScanning = false,
+  } = props;
 
-export function MapView() {
-  const mapRef = useRef<LeafletMapRef>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [highlightedDonor, setHighlightedDonor] = useState<number | null>(null);
+  const innerMapRef = useRef<LeafletMapRef>(null);
 
-  const trackDonor = (node: any) => {
-    if (!mapRef.current) return;
+  useImperativeHandle(ref, () => ({
+    flyTo: (coords: [number, number], customZoom: number = 15) => {
+      innerMapRef.current?.flyTo(coords, customZoom);
+    },
+    flyToBank: (bankId: string) => {
+      innerMapRef.current?.flyToBank(bankId);
+    },
+    locateUser: () => {
+      innerMapRef.current?.locateUser();
+    },
+    startNavigation: (bank: BloodBank) => {
+      innerMapRef.current?.startNavigation(bank);
+    },
+    clearNavigation: () => {
+      innerMapRef.current?.clearNavigation();
+    },
+  }));
 
-    // Smooth scroll map into view
-    containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-    // Normalize coordinates
-    const lat = node.lat || node.latitude;
-    const lng = node.lng || node.longitude;
-
-    if (lat && lng) {
-      // Smooth map animation
-      mapRef.current.flyTo([lat, lng], 15);
-
-      // Highlight marker effect
-      setHighlightedDonor(node.id);
-
-      // Remove highlight after 3 seconds
-      setTimeout(() => setHighlightedDonor(null), 3000);
-    }
+  const handleLocate = () => {
+    innerMapRef.current?.locateUser();
   };
 
+  const stockedCount = banks.filter((b) => b.stockStatus === 'stocked').length;
+
   return (
-    <Card ref={containerRef} className="overflow-hidden border-none shadow-2xl rounded-[2.5rem] bg-slate-100 dark:bg-slate-900 h-[600px] relative group border border-white/5">
-      {/* National Network Status Banner */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-50 w-[90%] sm:w-auto">
-         <div className="bg-slate-900/90 backdrop-blur-xl border border-white/10 px-6 py-2.5 rounded-full flex items-center gap-6 shadow-[0_0_30px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in duration-700">
-            <div className="flex items-center gap-2">
-               <Globe className="w-4 h-4 text-blue-400 animate-pulse" />
-               <span className="text-[10px] font-black text-white italic tracking-widest uppercase">Live Network</span>
-            </div>
-            <div className="h-4 w-px bg-white/10" />
-            <div className="flex gap-4">
-               <div className="flex flex-col items-center">
-                  <span className="text-primary text-[10px] font-black">1.2K+</span>
-                  <span className="text-[7px] text-slate-500 font-bold uppercase">Donors</span>
-               </div>
-               <div className="flex flex-col items-center">
-                  <span className="text-blue-400 text-[10px] font-black">84</span>
-                  <span className="text-[7px] text-slate-500 font-bold uppercase">Banks</span>
-               </div>
-               <div className="flex flex-col items-center">
-                  <span className="text-green-400 text-[10px] font-black">210</span>
-                  <span className="text-[7px] text-slate-500 font-bold uppercase">Hospitals</span>
-               </div>
-            </div>
-            <div className="h-4 w-px bg-white/10" />
-            <div className="flex items-center gap-1.5 bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20">
-               <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-               <span className="text-[8px] font-black text-green-500 uppercase">Secure</span>
-            </div>
-         </div>
-      </div>
-
-      {/* Map Compass */}
-      <div className="absolute top-24 right-8 z-50 bg-slate-900/80 backdrop-blur-md p-2 rounded-xl border border-white/10 shadow-xl animate-in slide-in-from-right duration-1000 delay-500">
-         <Compass className="w-6 h-6 text-slate-400/50 hover:text-primary transition-colors cursor-help" />
-      </div>
-
+    <Card className="h-full w-full min-h-[500px] relative rounded-[2.5rem] overflow-hidden border-2 border-white/5 shadow-2xl bg-slate-950 group/map">
       {/* Real-time Interactive Map */}
       <div className="absolute inset-0 z-0">
-         <LeafletMap ref={mapRef} highlightedId={highlightedDonor} />
+        <LeafletMap
+          ref={innerMapRef}
+          banks={banks}
+          selectedBankId={selectedBankId}
+          onSelectBank={onSelectBank}
+          center={center}
+          zoom={zoom}
+          isScanning={isScanning}
+        />
       </div>
-      
-      {/* Map Overlay Grid (Subtle Scanline Effect) */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.03),rgba(0,255,0,0.01),rgba(0,0,255,0.03))] bg-[length:100%_4px,4px_100%] pointer-events-none z-10"></div>
 
-      {/* Proximity Cards Overlay */}
-      <div className="absolute top-6 left-6 right-6 z-20 flex flex-col gap-3 pointer-events-none">
-         <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl p-4 rounded-[1.5rem] border border-primary/20 shadow-2xl flex items-center justify-between pointer-events-auto max-w-md mx-auto md:mx-0 w-full">
-            <div className="flex items-center gap-3">
-               <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20">
-                  <Navigation className="h-5 w-5 text-primary animate-pulse" />
-               </div>
-               <div>
-                  <h4 className="font-black text-sm tracking-tight italic">Nearby Donors</h4>
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-none">Live Radar Active</p>
-                  </div>
-               </div>
-            </div>
-            <Badge className="bg-slate-800 text-white text-[10px] font-black italic rounded-lg">{mockNearNodes.length} TRACKING</Badge>
-         </div>
+      {/* Subtle Scanline / Medical Grid Overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] bg-[length:100%_4px,4px_100%] pointer-events-none z-10" />
 
-         <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-3 pointer-events-none">
-            {mockNearNodes.map((node, i) => {
-               const colors = getRoleColors(node.role);
-               return (
-               <Card key={i} className={`glass-card border-none shadow-2xl hover:scale-[1.02] transition-transform cursor-default pointer-events-auto rounded-2xl overflow-hidden group/card relative`}>
-                  <div className={`absolute inset-0 ${colors.ring} opacity-0 group-hover/card:opacity-100 transition-opacity`}></div>
-                  <CardContent className="p-4 space-y-3 relative z-10">
-                     <div className="flex justify-between items-start">
-                        <div className="flex items-center gap-2">
-                           <div className={`w-8 h-8 ${colors.bg} rounded-lg flex items-center justify-center font-black text-white text-[10px] shadow-lg ${colors.shadow}`}>
-                              {node.group}
-                           </div>
-                           <span className="font-black text-sm tracking-tight">{node.name}</span>
-                        </div>
-                        <ShieldCheck className="h-4 w-4 text-green-500" />
-                     </div>
-                     <div className="flex justify-between items-center text-[10px] font-black text-muted-foreground uppercase tracking-widest">
-                        <span className="flex items-center gap-1"><MapPin className={`h-3 w-3 ${colors.text}`} /> {node.dist}</span>
-                        <span className="text-secondary font-black italic">{node.status}</span>
-                     </div>
-                      <Button 
-                        size="sm" 
-                        onClick={() => trackDonor(node)}
-                        className={`w-full h-8 rounded-xl bg-slate-900 ${colors.hover} text-white text-[9px] font-black italic transition-all group-hover/card:scale-105`}
-                      >
-                        {node.role === 'donor' ? 'TRACK DONOR' : 'VIEW ON MAP'}
-                      </Button>
-                  </CardContent>
-               </Card>
-               );
-            })}
-         </div>
+      {/* Scanning Radar Animation Effect */}
+      {isScanning && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none bg-primary/5 backdrop-blur-[1px] animate-in fade-in duration-300">
+          <div className="w-96 h-96 border-2 border-primary/40 rounded-full animate-ping [animation-duration:2s]" />
+          <div className="w-64 h-64 border-2 border-primary/30 rounded-full animate-ping [animation-duration:1.5s]" />
+          <div className="w-32 h-32 border-2 border-primary/50 rounded-full animate-pulse" />
+          <div className="absolute top-20 bg-slate-900/90 border border-primary/30 px-5 py-2 rounded-full shadow-2xl flex items-center gap-2">
+            <Activity className="w-4 h-4 text-primary animate-spin" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-white">
+              Scanning Emergency Network Frequencies...
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Top Header Pill */}
+      <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none gap-2">
+        <div className="bg-slate-900/90 backdrop-blur-md border border-white/10 px-4 py-2 rounded-2xl shadow-xl flex items-center gap-3 pointer-events-auto">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
+            </span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-white">
+              {banks.length} Centers Active
+            </span>
+          </div>
+          <div className="h-3 w-px bg-white/10" />
+          <span className="text-[9px] font-bold text-slate-400 hidden sm:inline">
+            <span className="text-green-400 font-black">{stockedCount}</span> Stocked
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 pointer-events-auto">
+          <Button
+            size="sm"
+            onClick={handleLocate}
+            variant="outline"
+            className="h-9 px-3 rounded-xl bg-slate-900/90 backdrop-blur-md border-white/10 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider shadow-xl flex items-center gap-1.5"
+          >
+            <Locate className="w-3.5 h-3.5 text-primary" />
+            <span className="hidden sm:inline">My Location</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Bottom Map Legend */}
+      <div className="absolute bottom-4 left-4 z-20 pointer-events-none">
+        <div className="bg-slate-900/90 backdrop-blur-md border border-white/10 px-4 py-2 rounded-2xl shadow-xl pointer-events-auto flex items-center gap-3">
+          <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-wider text-slate-300">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" /> Stocked
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.6)]" /> Low
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]" /> Critical
+            </span>
+          </div>
+        </div>
       </div>
     </Card>
   );
-}
+});
+
+MapView.displayName = 'MapView';
